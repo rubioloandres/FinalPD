@@ -2,7 +2,7 @@ module Parser.ParserCSV where
 
 import Text.CSV
 
-parsear :: IO ()
+-- parsear :: IO ()
 parsear = do
 
   let nombreDeArchivo = "cotizacionDolar2019.csv"

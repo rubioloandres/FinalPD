@@ -1,4 +1,4 @@
-module Interpolacion.Interpolar where
+module Interpolador.Interpolar where
 
 type Polinomio coeficientes = [coeficientes]
 type PuntosDeInterpolacion a = [(a,a)]
@@ -6,7 +6,7 @@ type PuntosDeInterpolacion a = [(a,a)]
 arregloDePuntos :: PuntosDeInterpolacion Double
 arregloDePuntos = [(0,1),(1,2),(7,50),(14,100)]
 
-calcularPolinomio = putStrLn.mostrarPolinomio$ polinomioPara arregloDePuntos
+calcularPolinomio arregloDePuntos = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos
 
 polinomioPara ::  Fractional a => PuntosDeInterpolacion a -> Polinomio a
 polinomioPara [] = []
