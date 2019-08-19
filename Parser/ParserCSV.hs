@@ -31,3 +31,4 @@ extraerColumna csv numeroDeColumna =
                        , length columna > numeroDeColumna
                        , columna /= [""] ]
                        
+ultimaCotizacion csv = last ( extraerColumna (obtenerDatos csv) 1 :: [Float] )

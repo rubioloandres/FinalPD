@@ -4,8 +4,8 @@ type Polinomio coeficientes = [coeficientes]
 type PuntosDeInterpolacion a = [(a,a)]
 
 arregloDePuntos :: PuntosDeInterpolacion Double
-arregloDePuntos = [(1,37.4069),(2,38.4086),(3,41.3624),(4,43.2338)]
--- arregloDePuntos = [(0,1),(1,2),(7,50),(14,100)]
+-- arregloDePuntos = [(1,37.4069),(2,38.4086),(3,41.3624),(4,43.2338)]
+arregloDePuntos = [(0,1),(1,2),(7,50),(14,100)]
 
 calcularPolinomio arregloDePuntos = mostrarPolinomio $ polinomioPara arregloDePuntos
 calcularPolinomio2 = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos

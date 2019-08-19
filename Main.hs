@@ -23,52 +23,72 @@ mesesDeAño =
 main :: IO ()
 main = print "Principal"
 
-obtenerPolinomio = do
+obtenerCotizaciones = do
 
-  putStrLn "Ingrese un mes en formato MMM: "
+  putStr "Ingrese un mes en formato MMM: "
   nombreMes <- getLine
   let numeroMes = buscarNumeroMes nombreMes
 
-  putStrLn "Ingrese una año en formato AA: "
+  putStr "Ingrese una año en formato AA: "
   año <- getLine
 
-  print "-------------------------"
-  putStrLn ("El mes ingresado es " ++ nombreMes )
-  putStrLn ("El año ingresado es " ++ año )
+  putStrLn "-----------------------------------------------------------"
+  putStrLn ("Estimacion de cotizaciones para " ++ nombreMes ++ " del 20" ++ año )
 
-  print "-------------------------"
+  putStrLn "-----------------------------------------------------------"
   let nombreDeArchivo1 = "pruebaDolar.csv"
   entrada <- readFile nombreDeArchivo1
 
   let nombreDeArchivo2 = "pruebaReal.csv"
   entrada2 <- readFile nombreDeArchivo2
 
-  print "---Polinomio de Cotizacion Dolar---"
+  putStrLn "---Cotizacion Dolar (a graficar)---"
   let datosCSV1 = parseCSV nombreDeArchivo1 entrada
   either manejarError interpolar datosCSV1
 
-  print "---Polinomio de Cotizacion Real---"
+  putStrLn "---Cotizacion Real (a graficar)---"
   let datosCSV2 = parseCSV nombreDeArchivo2 entrada2
   either manejarError interpolar datosCSV2
 
-  print "-------------------------"
+  putStrLn "-----------------------------------------------------------"
 
-  print "El numero de mes es: "
+--  print "El numero de mes es: "
   let valorDeX = encontrarXParaPolinomio numeroMes (toInt año)
-  print ( valorDeX )
+--  print ( valorDeX )
 
-  print "La cotizacion del dolar para la fecha deseada es: "
+  putStr "La cotizacion del dolar para la fecha deseada es: "
   case datosCSV1 of
     Left err -> print "error"
-    Right msg -> calcularCotizacion msg valorDeX
+    Right msg -> putStrLn ( show (calcularCotizacion msg valorDeX) )
     
-    
-  print "La cotizacion del real para la fecha deseada es: "
+  putStr "La cotizacion del real para la fecha deseada es: "
   case datosCSV2 of
     Left err -> print "error"
-    Right msg -> calcularCotizacion msg valorDeX
+    Right msg -> putStrLn ( show (calcularCotizacion msg valorDeX) )
 
+  putStrLn "-----------------------------------------------------------"
+  putStr "Ultima cotizacion del dolar: "
+  case datosCSV1 of
+    Left err -> print "error"
+    Right msg -> putStrLn ( show ( ultimaCotizacion msg ) )
+    
+  putStr "Ultima cotizacion del real: "
+  case datosCSV2 of
+    Left err -> print "error"
+    Right msg -> putStrLn ( show ( ultimaCotizacion msg ) )
+    
+  putStr "Variacion de cotizacion del dolar: "
+  case datosCSV1 of
+    Left err -> print "error"
+    Right msg ->  putStrLn ( show ( variacionCotizacion msg valorDeX ) ++ " ("  ++ (show (porcentajeVariacion (variacionCotizacion msg valorDeX) (ultimaCotizacion msg) )) ++ "%) ")
+    
+  putStr "Variacion de cotizacion del real: "
+  case datosCSV2 of
+    Left err -> print "error"
+    Right msgd -> putStrLn ( show ( variacionCotizacion msgd valorDeX ) ++ " ("  ++ (show (porcentajeVariacion (variacionCotizacion msgd valorDeX) (ultimaCotizacion msgd) )) ++ "%)")
 
+  putStrLn "-----------------------------------------------------------"
+---------------METODOS---------------------------------------
 interpolar csv = print ( calcularPolinomio (crearPuntos csv) )
 
 buscarNumeroMes nombreMes = encontrarMes nombreMes mesesDeAño
@@ -83,8 +103,14 @@ toInt string = read string
 encontrarXParaPolinomio mes año =
   case mes of
     Nothing   -> 0
-    Just val  -> (12 * (año - 19)) + val
+    Just numMes  -> (12 * (año - 19)) + numMes
     
-calcularCotizacion csv numMes = print ( obtenerResultado (crearPuntos csv) numMes )
+calcularCotizacion csv numMes = obtenerResultado (crearPuntos csv) numMes
 
 verPoli = calcularPolinomio2
+
+-- variacionCotizacion cotizacionFutura cotizacionActual = cotizacionFutura - cotizacionActual
+variacionCotizacion csv numMes = ( calcularCotizacion csv numMes ) - (ultimaCotizacion csv) 
+
+-- porcentajeVariacion = (variacionCotizacion * 100) / cotizacionActual
+porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
