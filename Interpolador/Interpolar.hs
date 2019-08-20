@@ -13,13 +13,18 @@ calcularPolinomio2 = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos
 obtenerResultado arregloDePuntos x = calcular ( polinomioPara arregloDePuntos ) x 
 -- obtenerResultado x = calcular ( polinomioPara arregloDePuntos ) x 
 
-polinomioPara ::  Fractional a => PuntosDeInterpolacion a -> Polinomio a
+-- polinomioPara ::  Fractional a => PuntosDeInterpolacion a -> Polinomio a
+polinomioPara :: PuntosDeInterpolacion Double -> Polinomio Double
 polinomioPara [] = []
-polinomioPara puntos@(_:xs) = a:polinomioPara (map(\(x,y)->(x,y-a*x^e) ) xs)   where 
+polinomioPara puntos@(_:xs) = a:polinomioPara (map(\(x,y)->(x, y-a*x^e ) ) xs)   where 
  a = coeficienteDeTerminoDeMayorGrado puntos
  e = length xs
 
-coeficienteDeTerminoDeMayorGrado :: Fractional a => PuntosDeInterpolacion a -> a
+round4dp :: Double -> Double
+round4dp x = fromIntegral (round $ x * 1e4) / 1e4
+
+-- coeficienteDeTerminoDeMayorGrado :: Fractional a => PuntosDeInterpolacion a -> a
+coeficienteDeTerminoDeMayorGrado :: PuntosDeInterpolacion Double -> Double
 coeficienteDeTerminoDeMayorGrado [(_,y)] = y
 coeficienteDeTerminoDeMayorGrado (a:b:ps) = (coeficienteDeTerminoDeMayorGrado(a:ps)-coeficienteDeTerminoDeMayorGrado(b:ps))/(x a - x b) where
  x (a,_) = a
