@@ -28,12 +28,33 @@ procesarDatos moneda csv nomMes año = do
     putStrLn ("Estimacion de cotizaciones para " ++ nomMes ++ " del 20" ++ año )
     putStrLn "-----------------------------------------------------------"
     print ("---Cotizacion "++ (moneda) ++" (a graficar)---")
-    interpolar csv
+
+    let listaPuntos = crearPuntos csv
+    let ultimoP = ultimoPunto listaPuntos
+    let listaVars = variaciones (map (\x -> snd x )  listaPuntos )
+    let promVars = average listaVars
+    let ultimaCot = ultimaCotizacion csv
+    let puntoFut1A = punto1AñoFuturo ultimoP promVars ultimaCot
+--    let puntoFut6M = punto6MesesFuturo ultimoP promVars ultimaCot
+    let puntoFut2A = punto2AñosFuturo ultimoP promVars ultimaCot
+    let puntoFut3A = punto3AñosFuturo ultimoP promVars ultimaCot
+    let puntoFut4A = punto4AñosFuturo ultimoP promVars ultimaCot
+    let puntoFut5A = punto5AñosFuturo ultimoP promVars ultimaCot    
+    let puntoFut6A = punto6AñosFuturo ultimoP promVars ultimaCot 
+    let puntoFut7A = punto7AñosFuturo ultimoP promVars ultimaCot 
+    let puntoFut8A = punto8AñosFuturo ultimoP promVars ultimaCot 
+    let puntosAInterpolar = (listaPuntos ++ [puntoFut1A,puntoFut2A,puntoFut3A])
+
+    interpolar puntosAInterpolar
     putStrLn "-----------------------------------------------------------"
     let valorDeX = encontrarXParaPolinomio numeroMes (toInt año) añoDeInicio
     print (valorDeX)
     print ("La cotizacion del "++ (moneda) ++" para la fecha deseada es: ")
-    let cotizacionFutura = round4dp (calcularCotizacion csv valorDeX)
+ --   let cotizacionFutura = round4dp (calcularCotizacion csv valorDeX)
+    
+    let cotizacionFutura = round4dp (interpolarLagrange puntosAInterpolar valorDeX)
+
+
     putStrLn ( show (cotizacionFutura) )
     putStrLn "-----------------------------------------------------------"
     print ("Ultima cotizacion del "++ (moneda) ++": ")
@@ -45,18 +66,10 @@ procesarDatos moneda csv nomMes año = do
     putStrLn (show (cambioEnCotizacion) ++ " ( " ++ show (porcentajeCambioEnCotizacion) ++ "%)")
     putStrLn "-----------------------------------------------------------"
 
-interpolar :: [Record] -> IO ()
-interpolar csv = do 
-    let listaPuntos = crearPuntos csv
-    let ultimoP = ultimoPunto listaPuntos
-    let listaVars = variaciones (map (\x -> snd x )  listaPuntos )
-    let promVars = average listaVars
-    let ultimaCot = ultimaCotizacion csv
-    let puntoFut1A = punto1AñoFuturo ultimoP promVars ultimaCot
-    let puntoFut6M = punto6MesesFuturo ultimoP promVars ultimaCot
-    let pp = (listaPuntos ++ [puntoFut6M,puntoFut1A])
-    print (pp)
-    print ( calcularPolinomio (pp) )
+
+interpolar listaPuntos = do 
+    print ( listaPuntos )
+    print ( calcularPolinomio (listaPuntos) )
 
 buscarNumeroMes :: [Char] -> Maybe Double
 buscarNumeroMes nombreMes = encontrarMes nombreMes mesesDeAño
@@ -67,13 +80,8 @@ encontrarMes nombreMes = foldr (\(nomMes,numMes) acc -> if nombreMes == nomMes t
 toInt :: Read a => String -> a
 toInt string = read string
 
--- encontrarXParaPolinomio :: Num p => Maybe p -> p -> p
--- encontrarXParaPolinomio :: Maybe Double -> Double -> Int -> Double
 -- numeroFecha = (12 * cantidadDeAños) + numeroMes
 -- cantidadDeAños = añoIngresado - añoInicial
-
-
--- IMPORTANTE : calcular añoInicual a partir de datos de csv
 encontrarXParaPolinomio mes año añoDeInicio =
     case mes of
     Nothing   -> 0
@@ -92,3 +100,6 @@ porcentajeVariacion :: Fractional a => a -> a -> a
 porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
 
 ---------------------------------------
+-- Metodo interpolarLagrange
+interpolarLagrange :: Fractional b => [(b, b)] -> b -> b
+interpolarLagrange lst x = lagrange lst x

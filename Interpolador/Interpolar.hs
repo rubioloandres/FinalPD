@@ -48,3 +48,13 @@ calcular (x:xs) num = (s (length xs) ) + (calcular xs num) where
  s 0 = x
  s 1 = ( x * num )
  s n = ( ( num ^ n ) * x )
+
+ -- Metodo de Lagrange
+lagrange :: Fractional b => [(b, b)] -> b -> b
+lagrange lst x =
+    let n   = length lst - 1
+        xs  = map fst lst
+        ys  = map snd lst
+        p i = product[(x - xs !! j) / (xs !! i - xs !! j) | j <- [0 .. n], i /= j]
+        q   = [(ys !! i) * (p i)| i <- [0..n]]
+    in  sum q
