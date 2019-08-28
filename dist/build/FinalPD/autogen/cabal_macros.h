@@ -11,15 +11,15 @@
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_FinalPD */
 
-/* package base-4.11.1.0 */
+/* package base-4.12.0.0 */
 #ifndef VERSION_base
-#define VERSION_base "4.11.1.0"
+#define VERSION_base "4.12.0.0"
 #endif /* VERSION_base */
 #ifndef MIN_VERSION_base
 #define MIN_VERSION_base(major1,major2,minor) (\
   (major1) <  4 || \
-  (major1) == 4 && (major2) <  11 || \
-  (major1) == 4 && (major2) == 11 && (minor) <= 1)
+  (major1) == 4 && (major2) <  12 || \
+  (major1) == 4 && (major2) == 12 && (minor) <= 0)
 #endif /* MIN_VERSION_base */
 
 /* package csv-0.1.2 */
@@ -32,6 +32,28 @@
   (major1) == 0 && (major2) <  1 || \
   (major1) == 0 && (major2) == 1 && (minor) <= 2)
 #endif /* MIN_VERSION_csv */
+
+/* package easyplot-1.0 */
+#ifndef VERSION_easyplot
+#define VERSION_easyplot "1.0"
+#endif /* VERSION_easyplot */
+#ifndef MIN_VERSION_easyplot
+#define MIN_VERSION_easyplot(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  0 || \
+  (major1) == 1 && (major2) == 0 && (minor) <= 0)
+#endif /* MIN_VERSION_easyplot */
+
+/* package tabular-0.2.2.7 */
+#ifndef VERSION_tabular
+#define VERSION_tabular "0.2.2.7"
+#endif /* VERSION_tabular */
+#ifndef MIN_VERSION_tabular
+#define MIN_VERSION_tabular(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  2 || \
+  (major1) == 0 && (major2) == 2 && (minor) <= 2)
+#endif /* MIN_VERSION_tabular */
 
 /* tool alex-3.2.4 */
 #ifndef TOOL_VERSION_alex
@@ -55,37 +77,37 @@
   (major1) == 7 && (major2) == 2 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_gcc */
 
-/* tool ghc-8.4.3 */
+/* tool ghc-8.6.5 */
 #ifndef TOOL_VERSION_ghc
-#define TOOL_VERSION_ghc "8.4.3"
+#define TOOL_VERSION_ghc "8.6.5"
 #endif /* TOOL_VERSION_ghc */
 #ifndef MIN_TOOL_VERSION_ghc
 #define MIN_TOOL_VERSION_ghc(major1,major2,minor) (\
   (major1) <  8 || \
-  (major1) == 8 && (major2) <  4 || \
-  (major1) == 8 && (major2) == 4 && (minor) <= 3)
+  (major1) == 8 && (major2) <  6 || \
+  (major1) == 8 && (major2) == 6 && (minor) <= 5)
 #endif /* MIN_TOOL_VERSION_ghc */
 
-/* tool ghc-pkg-8.4.3 */
+/* tool ghc-pkg-8.6.5 */
 #ifndef TOOL_VERSION_ghc_pkg
-#define TOOL_VERSION_ghc_pkg "8.4.3"
+#define TOOL_VERSION_ghc_pkg "8.6.5"
 #endif /* TOOL_VERSION_ghc_pkg */
 #ifndef MIN_TOOL_VERSION_ghc_pkg
 #define MIN_TOOL_VERSION_ghc_pkg(major1,major2,minor) (\
   (major1) <  8 || \
-  (major1) == 8 && (major2) <  4 || \
-  (major1) == 8 && (major2) == 4 && (minor) <= 3)
+  (major1) == 8 && (major2) <  6 || \
+  (major1) == 8 && (major2) == 6 && (minor) <= 5)
 #endif /* MIN_TOOL_VERSION_ghc_pkg */
 
-/* tool haddock-2.20.0 */
+/* tool haddock-2.22.0 */
 #ifndef TOOL_VERSION_haddock
-#define TOOL_VERSION_haddock "2.20.0"
+#define TOOL_VERSION_haddock "2.22.0"
 #endif /* TOOL_VERSION_haddock */
 #ifndef MIN_TOOL_VERSION_haddock
 #define MIN_TOOL_VERSION_haddock(major1,major2,minor) (\
   (major1) <  2 || \
-  (major1) == 2 && (major2) <  20 || \
-  (major1) == 2 && (major2) == 20 && (minor) <= 0)
+  (major1) == 2 && (major2) <  22 || \
+  (major1) == 2 && (major2) == 22 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_haddock */
 
 /* tool happy-1.19.9 */
@@ -110,15 +132,15 @@
   (major1) == 0 && (major2) == 67 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_hpc */
 
-/* tool hsc2hs-0.68.3 */
+/* tool hsc2hs-0.68.5 */
 #ifndef TOOL_VERSION_hsc2hs
-#define TOOL_VERSION_hsc2hs "0.68.3"
+#define TOOL_VERSION_hsc2hs "0.68.5"
 #endif /* TOOL_VERSION_hsc2hs */
 #ifndef MIN_TOOL_VERSION_hsc2hs
 #define MIN_TOOL_VERSION_hsc2hs(major1,major2,minor) (\
   (major1) <  0 || \
   (major1) == 0 && (major2) <  68 || \
-  (major1) == 0 && (major2) == 68 && (minor) <= 3)
+  (major1) == 0 && (major2) == 68 && (minor) <= 5)
 #endif /* MIN_TOOL_VERSION_hsc2hs */
 
 /* tool hscolour-1.24 */
@@ -132,15 +154,15 @@
   (major1) == 1 && (major2) == 24 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_hscolour */
 
-/* tool runghc-8.4.3 */
+/* tool runghc-8.6.5 */
 #ifndef TOOL_VERSION_runghc
-#define TOOL_VERSION_runghc "8.4.3"
+#define TOOL_VERSION_runghc "8.6.5"
 #endif /* TOOL_VERSION_runghc */
 #ifndef MIN_TOOL_VERSION_runghc
 #define MIN_TOOL_VERSION_runghc(major1,major2,minor) (\
   (major1) <  8 || \
-  (major1) == 8 && (major2) <  4 || \
-  (major1) == 8 && (major2) == 4 && (minor) <= 3)
+  (major1) == 8 && (major2) <  6 || \
+  (major1) == 8 && (major2) == 6 && (minor) <= 5)
 #endif /* MIN_TOOL_VERSION_runghc */
 
 /* tool strip-2.29 */

@@ -38,16 +38,16 @@ getBinDir :: IO FilePath
 getBinDir = getPrefixDirRel bindirrel
 
 getLibDir :: IO FilePath
-getLibDir = getPrefixDirRel "x86_64-windows-ghc-8.4.3\\FinalPD-0.1.0.0-CuNBfLgzbET4QLGQUZwyxt-FinalPD"
+getLibDir = getPrefixDirRel "x86_64-windows-ghc-8.6.5\\FinalPD-0.1.0.0-CuNBfLgzbET4QLGQUZwyxt-FinalPD"
 
 getDynLibDir :: IO FilePath
-getDynLibDir = getPrefixDirRel "x86_64-windows-ghc-8.4.3"
+getDynLibDir = getPrefixDirRel "x86_64-windows-ghc-8.6.5"
 
 getDataDir :: IO FilePath
-getDataDir =  catchIO (getEnv "FinalPD_datadir") (\_ -> getPrefixDirRel "x86_64-windows-ghc-8.4.3\\FinalPD-0.1.0.0")
+getDataDir =  catchIO (getEnv "FinalPD_datadir") (\_ -> getPrefixDirRel "x86_64-windows-ghc-8.6.5\\FinalPD-0.1.0.0")
 
 getLibexecDir :: IO FilePath
-getLibexecDir = getPrefixDirRel "FinalPD-0.1.0.0-CuNBfLgzbET4QLGQUZwyxt-FinalPD\\x86_64-windows-ghc-8.4.3\\FinalPD-0.1.0.0"
+getLibexecDir = getPrefixDirRel "FinalPD-0.1.0.0-CuNBfLgzbET4QLGQUZwyxt-FinalPD\\x86_64-windows-ghc-8.6.5\\FinalPD-0.1.0.0"
 
 getSysconfDir :: IO FilePath
 getSysconfDir = getPrefixDirRel "etc"
@@ -70,7 +70,14 @@ getPrefixDirRel dirRel = try_size 2048 -- plenty, PATH_MAX is 512 under Win32.
               return ((bindir `minusFileName` bindirrel) `joinFileName` dirRel)
             | otherwise  -> try_size (size * 2)
 
-foreign import ccall unsafe "windows.h GetModuleFileNameW"
+#if defined(i386_HOST_ARCH)
+# define WINDOWS_CCONV stdcall
+#elif defined(x86_64_HOST_ARCH)
+# define WINDOWS_CCONV ccall
+#else
+# error Unknown mingw32 arch
+#endif
+foreign import WINDOWS_CCONV unsafe "windows.h GetModuleFileNameW"
   c_GetModuleFileName :: Ptr () -> CWString -> Int32 -> IO Int32
 
 minusFileName :: FilePath -> String -> FilePath

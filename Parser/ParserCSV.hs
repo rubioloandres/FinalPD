@@ -35,8 +35,8 @@ extraerCol csv numeroDeColumna =
   [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]
 --  [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]   
 
-ultimaCotizacion :: [Record] -> Double
-ultimaCotizacion csv = last ( extraerColumna (obtenerDatos csv) 1:: [Double] )
+obtenerUltimaCotizacion :: [Record] -> Double
+obtenerUltimaCotizacion csv = last ( extraerColumna (obtenerDatos csv) 1:: [Double] )
 
 obtenerAñoDeInicio csv =  read ( drop 4 (head ( extraerCol (obtenerDatos csv) 0 )) ) :: Double
 
