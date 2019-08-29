@@ -61,21 +61,13 @@ ultimoPunto lista = ((length lista) - 1) * 12
 -- punto1AñoFuturo ultimoPunto promedioVariciones = (12 + ultimoPunto, 12 * promedioVariciones)
 punto1AñoFuturo :: Int -> Double -> Double -> (Double,Double)
 punto1AñoFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 12, (12 * promedioVariciones) + ultimaCotizacion)
-
 punto2AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 24, (24 * promedioVariciones) + ultimaCotizacion)
-
 punto3AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 36, (36 * promedioVariciones) + ultimaCotizacion)
-
 punto4AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 48, (48 * promedioVariciones) + ultimaCotizacion)
-
 punto5AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 60, (60 * promedioVariciones) + ultimaCotizacion)
-
 punto6AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 72, (72 * promedioVariciones) + ultimaCotizacion)
-
 punto7AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 84, (84 * promedioVariciones) + ultimaCotizacion)
-
 punto8AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 96, (96 * promedioVariciones) + ultimaCotizacion)
-
 punto6MesesFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 6, (6 * promedioVariciones) + ultimaCotizacion)
 
 --------------------------------------------------------------------

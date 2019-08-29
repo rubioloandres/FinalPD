@@ -27,6 +27,9 @@ polinomioPara puntos@(_:xs) = a:polinomioPara (map(\(x,y)->(x,  y-a*x^e ) ) xs) 
 round4dp :: Double -> Double
 round4dp x = fromIntegral (round $ x * 1e4) / 1e4
 
+round2dp :: Double -> Double
+round2dp x = fromIntegral (round $ x * 1e2) / 1e2
+
 coeficienteDeTerminoDeMayorGrado :: PuntosDeInterpolacion Double -> Double
 -- coeficienteDeTerminoDeMayorGrado :: Fractional a => PuntosDeInterpolacion a -> a
 coeficienteDeTerminoDeMayorGrado [(_,y)] = y

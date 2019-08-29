@@ -10,10 +10,13 @@ import Text.Tabular as TT
 
 data MonedaProcesada = MonedaProcesada { nombre :: String
                                        , ultimaCotizacion :: Double
+                                       , fechaCotizacionFutura :: Double
                                        , cotizacionFutura :: Double
                                        , variacionCotizacion :: Double
                                        , porcentajeVariacionCotizacion :: Double
                                        , polinomio :: String
+                                       , cotizaciones :: [(Double,Double)]
+                                       , cotizacionesFuturas :: [(Double,Double)]
                                        } deriving (Eq, Show, Read)
 
 mesesDeAño =
@@ -48,19 +51,26 @@ procesarDatos moneda csv nomMes año = do
     let puntoFut6A = punto6AñosFuturo ultimoP promVars ultimaCot 
     let puntoFut7A = punto7AñosFuturo ultimoP promVars ultimaCot 
     let puntoFut8A = punto8AñosFuturo ultimoP promVars ultimaCot 
-    let puntosAInterpolar = (listaPuntos ++ [puntoFut1A,puntoFut2A,puntoFut3A,puntoFut4A,puntoFut5A,puntoFut6A,puntoFut7A,puntoFut8A])
+    let puntosFut = [puntoFut1A,puntoFut2A,puntoFut3A,puntoFut4A,puntoFut5A,puntoFut6A,puntoFut7A,puntoFut8A]
+    let puntosAInterpolar = (listaPuntos ++ puntosFut)
     let poli = interpolar puntosAInterpolar
     let valorDeX = encontrarXParaPolinomio numeroMes (toInt año) añoDeInicio 
     let cotizacionFutura = round4dp (interpolarLagrange puntosAInterpolar valorDeX)
     let cotizacionActual = obtenerUltimaCotizacion csv
     let cambioEnCotizacion = round4dp (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
-    let porcentajeCambioEnCotizacion = round4dp (porcentajeVariacion cambioEnCotizacion cotizacionActual)
+    let porcentajeCambioEnCotizacion = round2dp (porcentajeVariacion cambioEnCotizacion cotizacionActual)
+    let listaCotPorAño = convertirXEnAños listaPuntos
+    let listaCotFuturas = convertirXEnAños ([(last listaPuntos)] ++ [puntoFut1A,puntoFut2A,puntoFut3A])
+
     let mon = MonedaProcesada { nombre = moneda
                               , ultimaCotizacion = cotizacionActual
+                              , fechaCotizacionFutura = (valorDeX / 12 ) + 2003
                               , cotizacionFutura = cotizacionFutura
                               , variacionCotizacion = cambioEnCotizacion
                               , porcentajeVariacionCotizacion = porcentajeCambioEnCotizacion
                               , polinomio = poli
+                              , cotizaciones = listaCotPorAño
+                              , cotizacionesFuturas = listaCotFuturas
                               }                          
     return mon                         
 
@@ -99,6 +109,9 @@ obtenerVariacionCotizacion cotizacionFutura cotizacionActual = cotizacionFutura 
 porcentajeVariacion :: Fractional a => a -> a -> a
 porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
 
+
+convertirXEnAños lista = map (\ (x,y) -> ( (x / 12 ) + 2003 ,y ) ) lista
+
 ---------------------------------------
 -- Metodo interpolarLagrange
 interpolarLagrange :: Fractional b => [(b, b)] -> b -> b
@@ -113,10 +126,28 @@ datosTabla moneda = Table
      ])
   (Group DoubleLine
      [ Group SingleLine [TT.Header "Ultima cotizacion", TT.Header "Cotizacion Futura"]
-     , Group SingleLine [TT.Header "Variacion", TT.Header "(%)"]
+     , Group SingleLine [TT.Header "Variacion", TT.Header "Variacion Porcentual"]
      ])
-  [ [show (ultimaCotizacion moneda), show (cotizacionFutura moneda), show (variacionCotizacion moneda), show (porcentajeVariacionCotizacion moneda)]
+  [ [ "$ " ++ show (ultimaCotizacion moneda)
+    , "$ " ++ show (cotizacionFutura moneda)
+    , "$ " ++ show (variacionCotizacion moneda)
+    , show (porcentajeVariacionCotizacion moneda) ++ " %"]
   ]
 
 -- Mostrar tabla
 mostrarTabla moneda = putStrLn (render id id id (datosTabla moneda)) 
+
+-----------------------------------------
+-- Visualizacion grafica de estimaciones
+
+mostrarCotizaciones cotizaciones = print cotizaciones 
+
+plotearCotizaciones datosMoneda = do
+  putStrLn "--- Escriba el comando 'quit' para cerrar el plot y continuar ---"
+--  plot' [Interactive] Windows [Data2D [Title "Cotizaciones", Color Red] [] (read (show (cotizaciones datosMoneda) )), Data2D [Title "Incognita", Style Points, Color Blue] [] [(read (fechaCotizacionFutura datosMoneda ),(cotizacionFutura datosMoneda))]]
+  plot' [Interactive] Windows [ Data2D [Title "Cotizaciones Historicas", Style Linespoints, Color Blue] [] (cotizaciones datosMoneda)                              
+                              , Data2D [Title "Cotizaciones Estimadas", Style Linespoints, Color Green] [] (cotizacionesFuturas datosMoneda)
+                              , Data2D [Title "Cotizacion Futura", Style Points, Color Red] [] [( (fechaCotizacionFutura datosMoneda),(cotizacionFutura datosMoneda) )]
+                              ]
+  putStrLn "----------------------------------------------------------------"
+  
