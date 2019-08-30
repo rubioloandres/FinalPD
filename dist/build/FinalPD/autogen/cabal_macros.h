@@ -44,6 +44,17 @@
   (major1) == 1 && (major2) == 0 && (minor) <= 0)
 #endif /* MIN_VERSION_easyplot */
 
+/* package parsec-3.1.13.0 */
+#ifndef VERSION_parsec
+#define VERSION_parsec "3.1.13.0"
+#endif /* VERSION_parsec */
+#ifndef MIN_VERSION_parsec
+#define MIN_VERSION_parsec(major1,major2,minor) (\
+  (major1) <  3 || \
+  (major1) == 3 && (major2) <  1 || \
+  (major1) == 3 && (major2) == 1 && (minor) <= 13)
+#endif /* MIN_VERSION_parsec */
+
 /* package tabular-0.2.2.7 */
 #ifndef VERSION_tabular
 #define VERSION_tabular "0.2.2.7"

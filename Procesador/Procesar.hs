@@ -34,7 +34,7 @@ mesesDeAño =
     ,("dic",11)
     ]    
 
--- procesarDatos :: [Char] -> [Record] -> [Char] -> [Char] -> IO ()
+
 procesarDatos moneda csv nomMes año = do
     let numeroMes = buscarNumeroMes nomMes
     let añoDeInicio = obtenerAñoDeInicio csv
@@ -74,9 +74,6 @@ procesarDatos moneda csv nomMes año = do
                               }                          
     return mon                         
 
---interpolar listaPuntos = do 
---    print ( listaPuntos )
---    print ( calcularPolinomio (listaPuntos) )
 interpolar listaPuntos = calcularPolinomio (listaPuntos)
 
 mostrarPoli poli = print poli
@@ -108,7 +105,6 @@ obtenerVariacionCotizacion cotizacionFutura cotizacionActual = cotizacionFutura 
 
 porcentajeVariacion :: Fractional a => a -> a -> a
 porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
-
 
 convertirXEnAños lista = map (\ (x,y) -> ( (x / 12 ) + 2003 ,y ) ) lista
 
@@ -151,3 +147,25 @@ plotearCotizaciones datosMoneda = do
                               ]
   putStrLn "----------------------------------------------------------------"
   
+
+------------------------------------------
+-- Procesamiento de monedas
+
+procesarMoneda nomMes año dato = case (snd dato) of
+  Left  perr -> Left "Error"
+  Right csv ->  do
+    let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
+    Right (datosMoneda !! 0)
+
+procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaDatos
+
+mostrarMonedas [] =  print "ok"
+mostrarMonedas (x:xs) = case x of
+                          Left err -> do
+                                      print "error"
+                                      mostrarMonedas xs
+                          Right datosMon -> do
+                            mostrarTabla ( datosMon )    
+                            plotearCotizaciones ( datosMon ) 
+                            print "ok"
+                            mostrarMonedas xs
