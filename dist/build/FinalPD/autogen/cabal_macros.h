@@ -55,6 +55,17 @@
   (major1) == 3 && (major2) == 1 && (minor) <= 13)
 #endif /* MIN_VERSION_parsec */
 
+/* package process-1.6.5.0 */
+#ifndef VERSION_process
+#define VERSION_process "1.6.5.0"
+#endif /* VERSION_process */
+#ifndef MIN_VERSION_process
+#define MIN_VERSION_process(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  6 || \
+  (major1) == 1 && (major2) == 6 && (minor) <= 5)
+#endif /* MIN_VERSION_process */
+
 /* package tabular-0.2.2.7 */
 #ifndef VERSION_tabular
 #define VERSION_tabular "0.2.2.7"

@@ -19,11 +19,6 @@ obtenerDatos csv = tail csv
 mostrarPuntos :: [Record] -> IO ()
 mostrarPuntos csv = print ( crearPuntos csv )
 
---crearPuntos :: (Num a, Enum a) => [Record] -> [(a, Double)]
--- crearPuntos csv = zip [0..] ( extraerColumna (obtenerDatos csv) 1 :: [Double] ) 
-
--- crearPuntos csv = zip [0..] ( extraerColumna (obtenerDatos csv) 1 :: [Double] ) 
-
 crearPuntos csv = crearPuntosAnuales ([0..]) ( extraerColumna (obtenerDatos csv) 1 :: [Double] ) 
 
 extraerColumna :: Read t => CSV -> Int -> [t]
@@ -33,7 +28,6 @@ extraerColumna csv numeroDeColumna =
 -- extraerColumna :: Read t => CSV -> Int -> [t]
 extraerCol csv numeroDeColumna =
   [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]
---  [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]   
 
 obtenerUltimaCotizacion :: [Record] -> Double
 obtenerUltimaCotizacion csv = last ( extraerColumna (obtenerDatos csv) 1:: [Double] )
@@ -58,17 +52,16 @@ variaciones lista = tail ( reverse (map (\ x -> ( aplicarResta x lista) ) lista)
 --PARA AÑOS
 ultimoPunto lista = ((length lista) - 1) * 12
 
--- punto1AñoFuturo ultimoPunto promedioVariciones = (12 + ultimoPunto, 12 * promedioVariciones)
-punto1AñoFuturo :: Int -> Double -> Double -> (Double,Double)
-punto1AñoFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 12, (12 * promedioVariciones) + ultimaCotizacion)
-punto2AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 24, (24 * promedioVariciones) + ultimaCotizacion)
-punto3AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 36, (36 * promedioVariciones) + ultimaCotizacion)
-punto4AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 48, (48 * promedioVariciones) + ultimaCotizacion)
-punto5AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 60, (60 * promedioVariciones) + ultimaCotizacion)
-punto6AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 72, (72 * promedioVariciones) + ultimaCotizacion)
-punto7AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 84, (84 * promedioVariciones) + ultimaCotizacion)
-punto8AñosFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 96, (96 * promedioVariciones) + ultimaCotizacion)
-punto6MesesFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 6, (6 * promedioVariciones) + ultimaCotizacion)
+puntosAñoFuturo lista ultimoP promVars ultimaCot = map (\ año -> puntoAñoFuturo año ultimoP promVars ultimaCot) lista
+
+puntoAñoFuturo añoFuturo ultimoP promedioVariciones ultimaCotizacion = do
+  let punto = (fromIntegral ultimoP) + (12 * añoFuturo)
+  let res = ((12 * añoFuturo)* promedioVariciones) + ultimaCotizacion
+  if (res :: Double) > 0
+    then (punto,res)
+    else (punto, ((-ultimaCotizacion) / ((12 * añoFuturo) * promedioVariciones)))
+
+--punto6MesesFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 6, (6 * promedioVariciones) + ultimaCotizacion)
 
 --------------------------------------------------------------------
 --METODOS PARA DATOS ANUALES
@@ -76,7 +69,6 @@ punto6MesesFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral 
 puntos p1 p2 = (p1 * 12, p2)
 
 crearPuntosAnuales puntosX puntosCSV = zipWith (puntos) puntosX puntosCSV
-
 
 parsear :: IO ()
 parsear = do

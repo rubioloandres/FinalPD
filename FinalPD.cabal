@@ -22,6 +22,6 @@ executable FinalPD
                        Parser.ParserCSV,
                        Procesador.Procesar
   -- other-extensions:
-  build-depends:       base, csv, easyplot, tabular, parsec
+  build-depends:       base, csv, easyplot, tabular, parsec, process
   -- hs-source-dirs:
   default-language:    Haskell2010

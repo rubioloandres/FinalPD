@@ -8,32 +8,37 @@ import Graphics.EasyPlot
 import Text.Tabular.AsciiArt
 import Text.Tabular as TT
 
-data MonedaProcesada = MonedaProcesada { nombre :: String
-                                       , ultimaCotizacion :: Double
-                                       , fechaCotizacionFutura :: Double
-                                       , cotizacionFutura :: Double
-                                       , variacionCotizacion :: Double
-                                       , porcentajeVariacionCotizacion :: Double
-                                       , polinomio :: String
-                                       , cotizaciones :: [(Double,Double)]
-                                       , cotizacionesFuturas :: [(Double,Double)]
-                                       } deriving (Eq, Show, Read)
+import Data.List (sortBy)
+import Data.Ord (comparing)
+
+import System.Process
+
+data MonedaProcesada = MonedaProcesada 
+                        { nombre :: String
+                        , ultimaCotizacion :: Double
+                        , fechaCotizacionFutura :: Double
+                        , cotizacionFutura :: Double
+                        , variacionCotizacion :: Double
+                        , porcentajeVariacionCotizacion :: Double
+                        , polinomio :: String
+                        , cotizaciones :: [(Double,Double)]
+                        , cotizacionesFuturas :: [(Double,Double)]
+                        } deriving (Eq, Show, Read, Ord)
 
 mesesDeAño =
-    [("ene",0)
-    ,("feb",1)
-    ,("mar",2)
-    ,("abr",3)
-    ,("may",4)
-    ,("jun",5)
-    ,("jul",6)
-    ,("ago",7)
-    ,("sep",8)
-    ,("oct",9)
-    ,("nov",10)
-    ,("dic",11)
-    ]    
-
+            [("ene",0)
+            ,("feb",1)
+            ,("mar",2)
+            ,("abr",3)
+            ,("may",4)
+            ,("jun",5)
+            ,("jul",6)
+            ,("ago",7)
+            ,("sep",8)
+            ,("oct",9)
+            ,("nov",10)
+            ,("dic",11)
+            ]    
 
 procesarDatos moneda csv nomMes año = do
     let numeroMes = buscarNumeroMes nomMes
@@ -43,15 +48,7 @@ procesarDatos moneda csv nomMes año = do
     let listaVars = variaciones (map (\x -> snd x )  listaPuntos )
     let promVars = average listaVars
     let ultimaCot = obtenerUltimaCotizacion csv
-    let puntoFut1A = punto1AñoFuturo ultimoP promVars ultimaCot
-    let puntoFut2A = punto2AñosFuturo ultimoP promVars ultimaCot
-    let puntoFut3A = punto3AñosFuturo ultimoP promVars ultimaCot
-    let puntoFut4A = punto4AñosFuturo ultimoP promVars ultimaCot
-    let puntoFut5A = punto5AñosFuturo ultimoP promVars ultimaCot    
-    let puntoFut6A = punto6AñosFuturo ultimoP promVars ultimaCot 
-    let puntoFut7A = punto7AñosFuturo ultimoP promVars ultimaCot 
-    let puntoFut8A = punto8AñosFuturo ultimoP promVars ultimaCot 
-    let puntosFut = [puntoFut1A,puntoFut2A,puntoFut3A,puntoFut4A,puntoFut5A,puntoFut6A,puntoFut7A,puntoFut8A]
+    let puntosFut = puntosAñoFuturo [1,2,3,4,5,6,7,8] ultimoP promVars ultimaCot
     let puntosAInterpolar = (listaPuntos ++ puntosFut)
     let poli = interpolar puntosAInterpolar
     let valorDeX = encontrarXParaPolinomio numeroMes (toInt año) añoDeInicio 
@@ -60,7 +57,7 @@ procesarDatos moneda csv nomMes año = do
     let cambioEnCotizacion = round4dp (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
     let porcentajeCambioEnCotizacion = round2dp (porcentajeVariacion cambioEnCotizacion cotizacionActual)
     let listaCotPorAño = convertirXEnAños listaPuntos
-    let listaCotFuturas = convertirXEnAños ([(last listaPuntos)] ++ [puntoFut1A,puntoFut2A,puntoFut3A])
+    let listaCotFuturas = convertirXEnAños ([(last listaPuntos)] ++ (take 3 puntosFut))
 
     let mon = MonedaProcesada { nombre = moneda
                               , ultimaCotizacion = cotizacionActual
@@ -108,30 +105,75 @@ porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
 
 convertirXEnAños lista = map (\ (x,y) -> ( (x / 12 ) + 2003 ,y ) ) lista
 
----------------------------------------
--- Metodo interpolarLagrange
-interpolarLagrange :: Fractional b => [(b, b)] -> b -> b
-interpolarLagrange lst x = lagrange lst x
-
 -----------------------------------------
--- Armado de tabla
+-- Armado de tablas
 
-datosTabla moneda = Table
+datosTablaCotizaciones monedas = Table
   (Group SingleLine
-     [ Group NoLine [TT.Header (nombre moneda)]
-     ])
+     [ Group NoLine [TT.Header (nombre (monedas !! 0))]
+     , Group NoLine [TT.Header (nombre (monedas !! 1))]
+     , Group NoLine [TT.Header (nombre (monedas !! 2))]
+     , Group NoLine [TT.Header (nombre (monedas !! 3))]
+     , Group NoLine [TT.Header (nombre (monedas !! 4))]
+     ]
+  )
   (Group DoubleLine
      [ Group SingleLine [TT.Header "Ultima cotizacion", TT.Header "Cotizacion Futura"]
      , Group SingleLine [TT.Header "Variacion", TT.Header "Variacion Porcentual"]
-     ])
-  [ [ "$ " ++ show (ultimaCotizacion moneda)
-    , "$ " ++ show (cotizacionFutura moneda)
-    , "$ " ++ show (variacionCotizacion moneda)
-    , show (porcentajeVariacionCotizacion moneda) ++ " %"]
+     ]
+  )
+  [ [ "$ " ++ show (ultimaCotizacion (monedas !! 0))
+    , "$ " ++ show (cotizacionFutura (monedas !! 0))
+    , "$ " ++ show (variacionCotizacion (monedas !! 0))
+    , show (porcentajeVariacionCotizacion (monedas !! 0)) ++ " %"
+    ],
+    [ "$ " ++ show (ultimaCotizacion (monedas !! 1))
+    , "$ " ++ show (cotizacionFutura (monedas !! 1))
+    , "$ " ++ show (variacionCotizacion (monedas !! 1))
+    , show (porcentajeVariacionCotizacion (monedas !! 1)) ++ " %"
+    ],
+    [ "$ " ++ show (ultimaCotizacion (monedas !! 2))
+    , "$ " ++ show (cotizacionFutura (monedas !! 2))
+    , "$ " ++ show (variacionCotizacion (monedas !! 2))
+    , show (porcentajeVariacionCotizacion (monedas !! 2)) ++ " %"
+    ],
+    [ "$ " ++ show (ultimaCotizacion (monedas !! 3))
+    , "$ " ++ show (cotizacionFutura (monedas !! 3))
+    , "$ " ++ show (variacionCotizacion (monedas !! 3))
+    , show (porcentajeVariacionCotizacion (monedas !! 3)) ++ " %"
+    ],
+    [ "$ " ++ show (ultimaCotizacion (monedas !! 4))
+    , "$ " ++ show (cotizacionFutura (monedas !! 4))
+    , "$ " ++ show (variacionCotizacion (monedas !! 4))
+    , show (porcentajeVariacionCotizacion (monedas !! 4)) ++ " %"
+    ]
   ]
 
--- Mostrar tabla
-mostrarTabla moneda = putStrLn (render id id id (datosTabla moneda)) 
+datosTablaVariacionCotizaciones monedas = Table
+  (Group SingleLine
+      [ Group NoLine [TT.Header "1°"]
+      , Group NoLine [TT.Header "2°"]
+      , Group NoLine [TT.Header "3°"]
+      , Group NoLine [TT.Header "4°"]
+      , Group NoLine [TT.Header "5°"]
+      ]
+  )
+  (Group DoubleLine
+      [ Group SingleLine [TT.Header "Moneda"]
+      , Group SingleLine [TT.Header "Variacion Porcentual"]
+      ]
+  )
+  [ [ nombre (monedas !! 0), show (porcentajeVariacionCotizacion (monedas !! 0)) ++ " %"  ]
+  , [ nombre (monedas !! 1), show (porcentajeVariacionCotizacion (monedas !! 1)) ++ " %"  ]
+  , [ nombre (monedas !! 2), show (porcentajeVariacionCotizacion (monedas !! 2)) ++ " %"  ]
+  , [ nombre (monedas !! 3), show (porcentajeVariacionCotizacion (monedas !! 3)) ++ " %"  ]
+  , [ nombre (monedas !! 4), show (porcentajeVariacionCotizacion (monedas !! 4)) ++ " %"  ]
+  ]
+
+-- Mostrar tablas
+mostrarTablaCotizaciones monedas = putStrLn (render id id id (datosTablaCotizaciones monedas)) 
+
+mostrarTablaVariacionCotizaciones monedas = putStrLn (render id id id (datosTablaVariacionCotizaciones monedas)) 
 
 -----------------------------------------
 -- Visualizacion grafica de estimaciones
@@ -139,33 +181,38 @@ mostrarTabla moneda = putStrLn (render id id id (datosTabla moneda))
 mostrarCotizaciones cotizaciones = print cotizaciones 
 
 plotearCotizaciones datosMoneda = do
-  putStrLn "--- Escriba el comando 'quit' para cerrar el plot y continuar ---"
---  plot' [Interactive] Windows [Data2D [Title "Cotizaciones", Color Red] [] (read (show (cotizaciones datosMoneda) )), Data2D [Title "Incognita", Style Points, Color Blue] [] [(read (fechaCotizacionFutura datosMoneda ),(cotizacionFutura datosMoneda))]]
+  putStrLn ("--- Evolucion del " ++ (nombre datosMoneda) ++ ". Escriba el comando 'quit' para cerrar el plot y continuar ---")
   plot' [Interactive] Windows [ Data2D [Title "Cotizaciones Historicas", Style Linespoints, Color Blue] [] (cotizaciones datosMoneda)                              
                               , Data2D [Title "Cotizaciones Estimadas", Style Linespoints, Color Green] [] (cotizacionesFuturas datosMoneda)
                               , Data2D [Title "Cotizacion Futura", Style Points, Color Red] [] [( (fechaCotizacionFutura datosMoneda),(cotizacionFutura datosMoneda) )]
                               ]
   putStrLn "----------------------------------------------------------------"
   
-
 ------------------------------------------
 -- Procesamiento de monedas
 
-procesarMoneda nomMes año dato = case (snd dato) of
-  Left  perr -> Left "Error"
-  Right csv ->  do
-    let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
-    Right (datosMoneda !! 0)
+mostrarGraficoMonedas [] =  putStrLn "-------------------------------------------------------------------------" 
+mostrarGraficoMonedas (x:xs) = do
+            plotearCotizaciones ( x ) 
+            mostrarGraficoMonedas xs
 
 procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaDatos
 
-mostrarMonedas [] =  print "ok"
-mostrarMonedas (x:xs) = case x of
-                          Left err -> do
-                                      print "error"
-                                      mostrarMonedas xs
-                          Right datosMon -> do
-                            mostrarTabla ( datosMon )    
-                            plotearCotizaciones ( datosMon ) 
-                            print "ok"
-                            mostrarMonedas xs
+procesarMoneda nomMes año dato = case (snd dato) of
+  Left  perr -> do
+    let monedaNoProcesada = MonedaProcesada { nombre = "error"
+                                            , ultimaCotizacion = 0.0
+                                            , fechaCotizacionFutura = 0.0
+                                            , cotizacionFutura = 0.0
+                                            , variacionCotizacion = 0
+                                            , porcentajeVariacionCotizacion = 0
+                                            , polinomio = "error"
+                                            , cotizaciones = []
+                                            , cotizacionesFuturas = []
+                                            }  
+    monedaNoProcesada   
+  Right csv ->  do
+    let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
+    (datosMoneda !! 0)
+   
+ordenarVariacionesDeCotizaciones monedas = reverse (sortBy (comparing porcentajeVariacionCotizacion) monedas)

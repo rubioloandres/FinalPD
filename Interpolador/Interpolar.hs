@@ -15,10 +15,8 @@ calcularPolinomio2 = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos
 
 obtenerResultado :: PuntosDeInterpolacion Double -> Double -> Double
 obtenerResultado arregloDePuntos x = calcular ( polinomioPara arregloDePuntos ) x
--- obtenerResultado x = calcular ( polinomioPara arregloDePuntos ) x 
 
 polinomioPara :: PuntosDeInterpolacion Double -> Polinomio Double
--- polinomioPara ::  Fractional a => PuntosDeInterpolacion a -> Polinomio a
 polinomioPara [] = []
 polinomioPara puntos@(_:xs) = a:polinomioPara (map(\(x,y)->(x,  y-a*x^e ) ) xs)   where 
  a = coeficienteDeTerminoDeMayorGrado puntos
@@ -31,7 +29,6 @@ round2dp :: Double -> Double
 round2dp x = fromIntegral (round $ x * 1e2) / 1e2
 
 coeficienteDeTerminoDeMayorGrado :: PuntosDeInterpolacion Double -> Double
--- coeficienteDeTerminoDeMayorGrado :: Fractional a => PuntosDeInterpolacion a -> a
 coeficienteDeTerminoDeMayorGrado [(_,y)] = y
 coeficienteDeTerminoDeMayorGrado (a:b:ps) = (coeficienteDeTerminoDeMayorGrado(a:ps)-coeficienteDeTerminoDeMayorGrado(b:ps))/(x a - x b) where
  x (a,_) = a
@@ -61,3 +58,10 @@ lagrange lst x =
         p i = product[(x - xs !! j) / (xs !! i - xs !! j) | j <- [0 .. n], i /= j]
         q   = [(ys !! i) * (p i)| i <- [0..n]]
     in  sum q
+
+---------------------------------------
+-- Metodo interpolarLagrange
+interpolarLagrange :: Fractional b => [(b, b)] -> b -> b
+interpolarLagrange lst x = lagrange lst x
+
+---------------------------------------
