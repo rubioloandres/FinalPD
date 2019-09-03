@@ -20,7 +20,8 @@ executable FinalPD
   other-modules:       
                        Interpolador.Interpolar,
                        Parser.ParserCSV,
-                       Procesador.Procesar
+                       Procesador.Procesar,
+                       Procesador.Graficar 
   -- other-extensions:
   build-depends:       base, csv, easyplot, tabular, parsec, process
   -- hs-source-dirs:

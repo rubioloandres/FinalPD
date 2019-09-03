@@ -3,13 +3,15 @@ module Interpolador.Interpolar where
 type Polinomio coeficientes = [coeficientes]
 type PuntosDeInterpolacion a = [(a,a)]
 
+-- array de puntos a interpolar
 arregloDePuntos :: PuntosDeInterpolacion Double
--- arregloDePuntos = [(1,37.4069),(2,38.4086),(3,41.3624),(4,43.2338)]
 arregloDePuntos = [(0,1),(1,2),(7,50),(14,100)]
 
+-- dado un array de puntos, devuelve un polinomio interpolante
 calcularPolinomio :: PuntosDeInterpolacion Double -> String
 calcularPolinomio arregloDePuntos = mostrarPolinomio $ polinomioPara arregloDePuntos
 
+-- utiliza el array de puntos del modulo, para testear la generacion del polinomio
 calcularPolinomio2 :: IO ()
 calcularPolinomio2 = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos
 
@@ -22,11 +24,11 @@ polinomioPara puntos@(_:xs) = a:polinomioPara (map(\(x,y)->(x,  y-a*x^e ) ) xs) 
  a = coeficienteDeTerminoDeMayorGrado puntos
  e = length xs
 
-round4dp :: Double -> Double
-round4dp x = fromIntegral (round $ x * 1e4) / 1e4
+redondear4Decimales :: Double -> Double
+redondear4Decimales x = fromIntegral (round $ x * 1e4) / 1e4
 
-round2dp :: Double -> Double
-round2dp x = fromIntegral (round $ x * 1e2) / 1e2
+redondear2Decimales :: Double -> Double
+redondear2Decimales x = fromIntegral (round $ x * 1e2) / 1e2
 
 coeficienteDeTerminoDeMayorGrado :: PuntosDeInterpolacion Double -> Double
 coeficienteDeTerminoDeMayorGrado [(_,y)] = y
@@ -60,8 +62,10 @@ lagrange lst x =
     in  sum q
 
 ---------------------------------------
--- Metodo interpolarLagrange
-interpolarLagrange :: Fractional b => [(b, b)] -> b -> b
-interpolarLagrange lst x = lagrange lst x
-
----------------------------------------
+-- dada una lista de puntos, y una incongnita, devuelve el valor correspontiente a la incognita
+interpolarLagrange :: [(Double, Double)] -> Double -> Double
+interpolarLagrange lst x = do
+    let res = lagrange lst x
+    if (res :: Double) > 0
+        then res
+        else (abs res) * 0.1

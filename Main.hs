@@ -3,6 +3,7 @@ import Text.Parsec.Error
 import Text.Tabular.AsciiArt
 import System.Process
 import Procesador.Procesar
+import Procesador.Graficar
 
 main :: IO ()
 main = do
@@ -16,8 +17,8 @@ main = do
   let nombreDeArchivo1 = "cotizacionesDolar.csv"
   let nombreDeArchivo2 = "cotizacionesReal.csv"
   let nombreDeArchivo3 = "cotizacionesEuro.csv"
-  let nombreDeArchivo4 = "cotizacionesBitcoin.csv"
-  let nombreDeArchivo5 = "cotizacionesBolivar.csv"
+  let nombreDeArchivo4 = "cotizacionesBolivar.csv" 
+  let nombreDeArchivo5 = "cotizacionesBitcoin.csv"
   entrada  <- readFile nombreDeArchivo1
   entrada2 <- readFile nombreDeArchivo2
   entrada3 <- readFile nombreDeArchivo3
@@ -31,13 +32,13 @@ main = do
   let datosCSV5 = parseCSV nombreDeArchivo4 entrada5
 
   let datos = [datosCSV1,datosCSV2,datosCSV3,datosCSV4,datosCSV5]
-  let monedas = ["Dolar", "Real","Euro","Bitcoin","Bolivar"]
+  let monedas = ["Dolar", "Real","Euro","Bolivar","Bitcoin"]
   let monedasDatos = zip monedas datos
   let monedasProcesadas = procesarMonedas nombreMes año monedasDatos
+  let monedasOrdenadas = ordenarVariacionesDeCotizaciones monedasProcesadas
 
   mostrarTablaCotizaciones monedasProcesadas
   mostrarGraficoMonedas monedasProcesadas
-
-  let monedasOrdenadas = ordenarVariacionesDeCotizaciones monedasProcesadas
   mostrarTablaVariacionCotizaciones monedasOrdenadas
+
 

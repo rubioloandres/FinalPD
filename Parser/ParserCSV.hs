@@ -1,83 +1,71 @@
 module Parser.ParserCSV where
 
 import Text.CSV
-import Data.List
 
+-- devuelve un mensaje de error (si se produjo un error en el parseo del csv)
 manejarError :: a -> IO ()
-manejarError csv = putStrLn "error en parseo"
+manejarError errCsv = putStrLn "error en parseo"
 
+-- muestra datos a partir de un csv
 procesar :: Show a => [a] -> IO ()
 procesar csv = mostrar (obtenerDatos csv)
 
+-- imprime en pantalla un csv
 mostrar :: Show a => a -> IO ()
 mostrar csv = print csv
 
--- con esta funcion eliminamos el nombre de la columna (header de csv)
+-- imprime en pantalla puntos generados a partir de un csv
+mostrarPuntos :: [Record] -> IO ()
+mostrarPuntos csv = print (crearPuntos csv)
+
+-- elimina el header del csv
 obtenerDatos :: [a] -> [a]
 obtenerDatos csv = tail csv
 
-mostrarPuntos :: [Record] -> IO ()
-mostrarPuntos csv = print ( crearPuntos csv )
+-- dado un año y una cotizacion, devuelve un punto/tupla (x,y)
+crearPunto :: Num a => a -> b -> (a, b)
+crearPunto año cotizacion = (año * 12, cotizacion)
 
-crearPuntos csv = crearPuntosAnuales ([0..]) ( extraerColumna (obtenerDatos csv) 1 :: [Double] ) 
+-- dados un array de elementos X y un array de elementos Y, devuelve un array de puntos/tuplas
+crearPuntosAnuales :: Num a => [a] -> [b] -> [(a, b)]
+crearPuntosAnuales años cotizaciones = zipWith (crearPunto) años cotizaciones
 
-extraerColumna :: Read t => CSV -> Int -> [t]
-extraerColumna csv numeroDeColumna =
+-- dado un csv, devuelve un array de puntos/tuplas (x,y)
+-- x = representa un numero de mes
+-- y = representa una cotizacion para el numero de mes  
+crearPuntos :: (Num a, Enum a) => [Record] -> [(a, Double)]
+crearPuntos csv = crearPuntosAnuales ([0..]) ( extraerColumnaComoRead (obtenerDatos csv) 1 :: [Double] ) 
+
+-- dado un csv y un numero de columna, devuelve un array (de reads) con los datos de la columna indicada 
+extraerColumnaComoRead :: Read t => CSV -> Int -> [t]
+extraerColumnaComoRead csv numeroDeColumna =
   [ read (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ] 
-  
--- extraerColumna :: Read t => CSV -> Int -> [t]
-extraerCol csv numeroDeColumna =
+
+-- dado un csv y un numero de columna, devuelve un array (de strings) con los datos de la columna indicada
+extraerColumnaComoString :: [[[Char]]] -> Int -> [[Char]]   
+extraerColumnaComoString csv numeroDeColumna =
   [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]
 
+-- dado un csv, devuelve el año del primer registro de cotizacion
+obtenerAñoDeInicio :: [[[Char]]] -> Double
+obtenerAñoDeInicio csv =  read ( drop 4 (head ( extraerColumnaComoString (obtenerDatos csv) 0 )) ) :: Double
+
+-- dado un csv, devuelve la ultima cotizacion registrada
 obtenerUltimaCotizacion :: [Record] -> Double
-obtenerUltimaCotizacion csv = last ( extraerColumna (obtenerDatos csv) 1:: [Double] )
-
-obtenerAñoDeInicio csv =  read ( drop 4 (head ( extraerCol (obtenerDatos csv) 0 )) ) :: Double
-
---------------------------------------------------------
-average xs = realToFrac (sum xs) / genericLength xs
-
--- la ultima resta no deberia hacerse
-aplicarResta :: Double -> [Double] -> Double
-aplicarResta x lista = case (lookup x $ (zip <*> tail) lista) of
-    Just n -> n - x
-    Nothing -> 0
-
--- variaciones lista = map (\ x -> ( aplicarResta x lista) ) lista
-variaciones lista = tail ( reverse (map (\ x -> ( aplicarResta x lista) ) lista) )
-
---PARA MESES
--- ultimoPunto lista = (length lista) - 1
-
---PARA AÑOS
-ultimoPunto lista = ((length lista) - 1) * 12
-
-puntosAñoFuturo lista ultimoP promVars ultimaCot = map (\ año -> puntoAñoFuturo año ultimoP promVars ultimaCot) lista
-
-puntoAñoFuturo añoFuturo ultimoP promedioVariciones ultimaCotizacion = do
-  let punto = (fromIntegral ultimoP) + (12 * añoFuturo)
-  let res = ((12 * añoFuturo)* promedioVariciones) + ultimaCotizacion
-  if (res :: Double) > 0
-    then (punto,res)
-    else (punto, ((-ultimaCotizacion) / ((12 * añoFuturo) * promedioVariciones)))
-
---punto6MesesFuturo ultimoP promedioVariciones ultimaCotizacion = ( (fromIntegral ultimoP) + 6, (6 * promedioVariciones) + ultimaCotizacion)
-
+obtenerUltimaCotizacion csv = last ( extraerColumnaComoRead (obtenerDatos csv) 1 :: [Double] )
 --------------------------------------------------------------------
---METODOS PARA DATOS ANUALES
 
-puntos p1 p2 = (p1 * 12, p2)
-
-crearPuntosAnuales puntosX puntosCSV = zipWith (puntos) puntosX puntosCSV
-
+-- funcion para testear el modulo
 parsear :: IO ()
 parsear = do
 
-  let nombreDeArchivo = "cotizacionDolar2019.csv"
+  let nombreDeArchivo = "test.csv"
   entrada <- readFile nombreDeArchivo
   
   let csv = parseCSV nombreDeArchivo entrada 
-  either manejarError procesar csv
-  
-  let datosCSV = parseCSV nombreDeArchivo entrada
-  either manejarError mostrarPuntos datosCSV
+  case csv of  
+    Left err -> manejarError err
+    Right c -> do
+      procesar c
+      mostrarPuntos c
+

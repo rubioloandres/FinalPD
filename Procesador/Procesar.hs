@@ -3,15 +3,12 @@ module Procesador.Procesar where
 import Text.CSV
 import Parser.ParserCSV
 import Interpolador.Interpolar    
-import Graphics.EasyPlot
-
-import Text.Tabular.AsciiArt
-import Text.Tabular as TT
-
+import System.Process
+import Data.Char
+import Data.List
 import Data.List (sortBy)
 import Data.Ord (comparing)
 
-import System.Process
 
 data MonedaProcesada = MonedaProcesada 
                         { nombre :: String
@@ -40,164 +37,14 @@ mesesDeAño =
             ,("dic",11)
             ]    
 
-procesarDatos moneda csv nomMes año = do
-    let numeroMes = buscarNumeroMes nomMes
-    let añoDeInicio = obtenerAñoDeInicio csv
-    let listaPuntos = crearPuntos csv
-    let ultimoP = ultimoPunto listaPuntos
-    let listaVars = variaciones (map (\x -> snd x )  listaPuntos )
-    let promVars = average listaVars
-    let ultimaCot = obtenerUltimaCotizacion csv
-    let puntosFut = puntosAñoFuturo [1,2,3,4,5,6,7,8] ultimoP promVars ultimaCot
-    let puntosAInterpolar = (listaPuntos ++ puntosFut)
-    let poli = interpolar puntosAInterpolar
-    let valorDeX = encontrarXParaPolinomio numeroMes (toInt año) añoDeInicio 
-    let cotizacionFutura = round4dp (interpolarLagrange puntosAInterpolar valorDeX)
-    let cotizacionActual = obtenerUltimaCotizacion csv
-    let cambioEnCotizacion = round4dp (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
-    let porcentajeCambioEnCotizacion = round2dp (porcentajeVariacion cambioEnCotizacion cotizacionActual)
-    let listaCotPorAño = convertirXEnAños listaPuntos
-    let listaCotFuturas = convertirXEnAños ([(last listaPuntos)] ++ (take 3 puntosFut))
+------------------------------------------------------------------------------
 
-    let mon = MonedaProcesada { nombre = moneda
-                              , ultimaCotizacion = cotizacionActual
-                              , fechaCotizacionFutura = (valorDeX / 12 ) + 2003
-                              , cotizacionFutura = cotizacionFutura
-                              , variacionCotizacion = cambioEnCotizacion
-                              , porcentajeVariacionCotizacion = porcentajeCambioEnCotizacion
-                              , polinomio = poli
-                              , cotizaciones = listaCotPorAño
-                              , cotizacionesFuturas = listaCotFuturas
-                              }                          
-    return mon                         
-
-interpolar listaPuntos = calcularPolinomio (listaPuntos)
-
-mostrarPoli poli = print poli
-
-buscarNumeroMes :: [Char] -> Maybe Double
-buscarNumeroMes nombreMes = encontrarMes nombreMes mesesDeAño
-
-encontrarMes :: (Eq nomMes) => nomMes -> [(nomMes,numMes)] -> Maybe numMes
-encontrarMes nombreMes = foldr (\(nomMes,numMes) acc -> if nombreMes == nomMes then Just numMes else acc) Nothing
-
-toInt :: Read a => String -> a
-toInt string = read string
-
--- numeroFecha = (12 * cantidadDeAños) + numeroMes
--- cantidadDeAños = añoIngresado - añoInicial
-encontrarXParaPolinomio mes año añoDeInicio =
-    case mes of
-    Nothing   -> 0
-    Just numMes  -> (12 * (año - añoDeInicio)) + numMes
-
-calcularCotizacion :: [Record] -> Double -> Double    
-calcularCotizacion csv numMes = obtenerResultado (crearPuntos csv) numMes
-
-verPoli :: IO ()
-verPoli = calcularPolinomio2
-
-obtenerVariacionCotizacion :: Double -> Double -> Double
-obtenerVariacionCotizacion cotizacionFutura cotizacionActual = cotizacionFutura - cotizacionActual
-
-porcentajeVariacion :: Fractional a => a -> a -> a
-porcentajeVariacion variacion cotActual = (variacion * 100) / cotActual
-
-convertirXEnAños lista = map (\ (x,y) -> ( (x / 12 ) + 2003 ,y ) ) lista
-
------------------------------------------
--- Armado de tablas
-
-datosTablaCotizaciones monedas = Table
-  (Group SingleLine
-     [ Group NoLine [TT.Header (nombre (monedas !! 0))]
-     , Group NoLine [TT.Header (nombre (monedas !! 1))]
-     , Group NoLine [TT.Header (nombre (monedas !! 2))]
-     , Group NoLine [TT.Header (nombre (monedas !! 3))]
-     , Group NoLine [TT.Header (nombre (monedas !! 4))]
-     ]
-  )
-  (Group DoubleLine
-     [ Group SingleLine [TT.Header "Ultima cotizacion", TT.Header "Cotizacion Futura"]
-     , Group SingleLine [TT.Header "Variacion", TT.Header "Variacion Porcentual"]
-     ]
-  )
-  [ [ "$ " ++ show (ultimaCotizacion (monedas !! 0))
-    , "$ " ++ show (cotizacionFutura (monedas !! 0))
-    , "$ " ++ show (variacionCotizacion (monedas !! 0))
-    , show (porcentajeVariacionCotizacion (monedas !! 0)) ++ " %"
-    ],
-    [ "$ " ++ show (ultimaCotizacion (monedas !! 1))
-    , "$ " ++ show (cotizacionFutura (monedas !! 1))
-    , "$ " ++ show (variacionCotizacion (monedas !! 1))
-    , show (porcentajeVariacionCotizacion (monedas !! 1)) ++ " %"
-    ],
-    [ "$ " ++ show (ultimaCotizacion (monedas !! 2))
-    , "$ " ++ show (cotizacionFutura (monedas !! 2))
-    , "$ " ++ show (variacionCotizacion (monedas !! 2))
-    , show (porcentajeVariacionCotizacion (monedas !! 2)) ++ " %"
-    ],
-    [ "$ " ++ show (ultimaCotizacion (monedas !! 3))
-    , "$ " ++ show (cotizacionFutura (monedas !! 3))
-    , "$ " ++ show (variacionCotizacion (monedas !! 3))
-    , show (porcentajeVariacionCotizacion (monedas !! 3)) ++ " %"
-    ],
-    [ "$ " ++ show (ultimaCotizacion (monedas !! 4))
-    , "$ " ++ show (cotizacionFutura (monedas !! 4))
-    , "$ " ++ show (variacionCotizacion (monedas !! 4))
-    , show (porcentajeVariacionCotizacion (monedas !! 4)) ++ " %"
-    ]
-  ]
-
-datosTablaVariacionCotizaciones monedas = Table
-  (Group SingleLine
-      [ Group NoLine [TT.Header "1°"]
-      , Group NoLine [TT.Header "2°"]
-      , Group NoLine [TT.Header "3°"]
-      , Group NoLine [TT.Header "4°"]
-      , Group NoLine [TT.Header "5°"]
-      ]
-  )
-  (Group DoubleLine
-      [ Group SingleLine [TT.Header "Moneda"]
-      , Group SingleLine [TT.Header "Variacion Porcentual"]
-      ]
-  )
-  [ [ nombre (monedas !! 0), show (porcentajeVariacionCotizacion (monedas !! 0)) ++ " %"  ]
-  , [ nombre (monedas !! 1), show (porcentajeVariacionCotizacion (monedas !! 1)) ++ " %"  ]
-  , [ nombre (monedas !! 2), show (porcentajeVariacionCotizacion (monedas !! 2)) ++ " %"  ]
-  , [ nombre (monedas !! 3), show (porcentajeVariacionCotizacion (monedas !! 3)) ++ " %"  ]
-  , [ nombre (monedas !! 4), show (porcentajeVariacionCotizacion (monedas !! 4)) ++ " %"  ]
-  ]
-
--- Mostrar tablas
-mostrarTablaCotizaciones monedas = putStrLn (render id id id (datosTablaCotizaciones monedas)) 
-
-mostrarTablaVariacionCotizaciones monedas = putStrLn (render id id id (datosTablaVariacionCotizaciones monedas)) 
-
------------------------------------------
--- Visualizacion grafica de estimaciones
-
-mostrarCotizaciones cotizaciones = print cotizaciones 
-
-plotearCotizaciones datosMoneda = do
-  putStrLn ("--- Evolucion del " ++ (nombre datosMoneda) ++ ". Escriba el comando 'quit' para cerrar el plot y continuar ---")
-  plot' [Interactive] Windows [ Data2D [Title "Cotizaciones Historicas", Style Linespoints, Color Blue] [] (cotizaciones datosMoneda)                              
-                              , Data2D [Title "Cotizaciones Estimadas", Style Linespoints, Color Green] [] (cotizacionesFuturas datosMoneda)
-                              , Data2D [Title "Cotizacion Futura", Style Points, Color Red] [] [( (fechaCotizacionFutura datosMoneda),(cotizacionFutura datosMoneda) )]
-                              ]
-  putStrLn "----------------------------------------------------------------"
-  
-------------------------------------------
--- Procesamiento de monedas
-
-mostrarGraficoMonedas [] =  putStrLn "-------------------------------------------------------------------------" 
-mostrarGraficoMonedas (x:xs) = do
-            plotearCotizaciones ( x ) 
-            mostrarGraficoMonedas xs
-
+-- dado un mes y año, y una lista de datos de cotizaciones, devuelve un array de monedas procesadas
+procesarMonedas :: [Char] -> [Char] -> [([Char], Either a [[[Char]]])] -> [MonedaProcesada]
 procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaDatos
 
+-- dado un mes y año, y un dato de cotizacion, devuelve una moneda procesada
+procesarMoneda :: [Char] -> [Char] -> ([Char], Either a [[[Char]]]) -> MonedaProcesada
 procesarMoneda nomMes año dato = case (snd dato) of
   Left  perr -> do
     let monedaNoProcesada = MonedaProcesada { nombre = "error"
@@ -214,5 +61,164 @@ procesarMoneda nomMes año dato = case (snd dato) of
   Right csv ->  do
     let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
     (datosMoneda !! 0)
-   
+ 
+-- dado un array de monedas procesadas, ordena el array en base al cambio de cotizaciones
+-- siendo la primera la de mayor variacion positiva (mejor inversion)    
+ordenarVariacionesDeCotizaciones :: [MonedaProcesada] -> [MonedaProcesada]
 ordenarVariacionesDeCotizaciones monedas = reverse (sortBy (comparing porcentajeVariacionCotizacion) monedas)
+------------------------------------------------------------------------------
+
+-- dado el nombre de una moneda, un csv, un mes y un año
+-- devuelve una MonedaProcesada, con los datos necesarios para su analisis y comparacion     
+procesarDatos :: Monad m => [Char] -> [[[Char]]] -> [Char] -> [Char] -> m MonedaProcesada
+procesarDatos moneda csv nomMes año = do
+    let numeroMes = buscarNumeroMes nomMes
+    let añoDeInicio = obtenerAñoDeInicio csv
+    let listaPuntos = crearPuntos csv
+    let ultimoPunto = obtenerUltimoPunto listaPuntos
+    let listaVariaciones = obtenerVariaciones listaPuntos
+    let promedioDeVariaciones = promedio listaVariaciones
+    let ultimaCotizacion = obtenerUltimaCotizacion csv
+    let añosFuturo = 8
+    let puntosFuturos = crearPuntosAñoFuturo añosFuturo ultimoPunto promedioDeVariaciones ultimaCotizacion
+    let puntosAInterpolar = (listaPuntos ++ puntosFuturos)
+    let polinomio = generarPolinomioInterpolante puntosAInterpolar
+    let numeroMesAEstimar = obtenerNumeroMesAEstimar numeroMes (toInt año) añoDeInicio 
+    let cotizacionFutura = redondear4Decimales (interpolarLagrange puntosAInterpolar numeroMesAEstimar)
+    let cotizacionActual = obtenerUltimaCotizacion csv
+    let cambioEnCotizacion = redondear4Decimales (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
+    let porcentajeCambioEnCotizacion = redondear2Decimales (porcentajeVariacion cambioEnCotizacion cotizacionActual)
+    let listaCotizacionesPorAño = convertirPuntosRegistrosEnAños listaPuntos
+    let listaCotizacionesFuturas = convertirPuntosRegistrosEnAños ([(last listaPuntos)] ++ (take 3 puntosFuturos)) 
+
+    let monedaProcesada = MonedaProcesada { nombre = moneda
+                                          , ultimaCotizacion = cotizacionActual
+                                          , fechaCotizacionFutura = (numeroMesAEstimar / 12 ) + 2003
+                                          , cotizacionFutura = cotizacionFutura
+                                          , variacionCotizacion = cambioEnCotizacion
+                                          , porcentajeVariacionCotizacion = porcentajeCambioEnCotizacion
+                                          , polinomio = polinomio
+                                          , cotizaciones = listaCotizacionesPorAño
+                                          , cotizacionesFuturas = listaCotizacionesFuturas
+                                          }                          
+    return monedaProcesada                         
+
+------------------------------------------------------------------------------    
+
+-- dado un mes 'MMM' nos devuelve un numero de mes
+buscarNumeroMes :: [Char] -> Maybe Double
+buscarNumeroMes nombreMes = encontrarMes nombreMes mesesDeAño
+
+-- dado un mes y una lista de meses, devuelve el numero de mes correspondiente
+encontrarMes :: Foldable t => [Char] -> t ([Char], a) -> Maybe a
+encontrarMes nombreMes = foldr (\(nomMes,numMes) acc -> if  (lowerString nombreMes) == nomMes  then Just numMes else acc) Nothing
+
+-- convierte a minuscula un string
+lowerString :: [Char] -> [Char]
+lowerString = map toLower
+
+------------------------------------------------------------------------------
+
+-- dada una lista de puntos, devuelve el ultimo (representa un mes)
+obtenerUltimoPunto :: Foldable t => t a -> Int
+obtenerUltimoPunto lista = ((length lista) - 1) * 12
+
+------------------------------------------------------------------------------
+
+-- dado un punto, devuelve la segunda componente (cotizacion)
+obtenerCotizacionDesdePunto :: (a, b) -> b
+obtenerCotizacionDesdePunto punto = snd punto
+
+-- dada una lista de puntos (mes,cotizacion), devuelve un array de variaciones de cotizaciones
+obtenerVariaciones :: [(a, Double)] -> [Double]
+obtenerVariaciones listaPuntos = calcularVariaciones (map (obtenerCotizacionDesdePunto) listaPuntos)
+
+-- dada una lista de cotizaciones, devuelve un array de las variaciones entre las cotizaciones     
+calcularVariaciones :: [Double] -> [Double]    
+calcularVariaciones listaCotizaciones = tail ( reverse (map (\ cotizacion -> ( aplicarResta cotizacion listaCotizaciones) ) listaCotizaciones) )
+
+-- dada una cotizacion y una lista de cotizaciones, devuelve la resta entre la cotizacion dada y la siguiente
+aplicarResta :: Double -> [Double] -> Double
+aplicarResta cotizacionActual listaCotizaciones = case (lookup cotizacionActual $ (zip <*> tail) listaCotizaciones) of
+    Just cotizacionSiguiente -> cotizacionSiguiente - cotizacionActual
+    Nothing -> 0
+
+------------------------------------------------------------------------------
+
+-- dada una lista, devuelve su promedio    
+promedio :: (Fractional a1, Real a2) => [a2] -> a1
+promedio lista = realToFrac (sum lista) / genericLength lista
+
+-- dada una cantidad de años, un ultimo punto de cotizacion, el promedio de variaciones, y la ultima cotizacion registrada
+-- devuelve un array de puntos (mesFuturo,cotizacion)
+crearPuntosAñoFuturo :: Integral a => Double -> a -> Double -> Double -> [(Double, Double)]
+crearPuntosAñoFuturo cantidadAños ultimoPunto promedioDeVariaciones ultimaCotizacion = puntosAñoFuturo (generarArrayDeAños cantidadAños) ultimoPunto promedioDeVariaciones ultimaCotizacion
+
+-- dada una cantidad, genera un array de elementos desde 1 hasta la cantidad proporcionada
+generarArrayDeAños :: (Ord a, Num a, Enum a) => a -> [a]
+generarArrayDeAños cantidadAños = takeWhile (<= cantidadAños) [1..]
+
+-- dada una lista de años futuros (a estimar), el ultimo punto de cotizacion generado, el promedio de variaciones calculado
+-- y la ultima cotizacion registrada, devuelve un array de puntos (x,y)
+-- x = representa un mes futuro
+-- y = representa una cotizacion para el mes futuro
+puntosAñoFuturo :: Integral a => [Double] -> a -> Double -> Double -> [(Double, Double)]
+puntosAñoFuturo listaAñosFuturos ultimoPunto promedioDeVariaciones ultimaCotizacion = map (\ año -> puntoAñoFuturo año ultimoPunto promedioDeVariaciones ultimaCotizacion) listaAñosFuturos
+
+-- dado un año futuro, el ultimo punto de cotizacion, el promedio de variaciones, y la ultima cotizacion registrada
+-- devuelve un punto (mes,cotizacion)
+puntoAñoFuturo :: Integral a => Double -> a -> Double -> Double -> (Double, Double)
+puntoAñoFuturo añoFuturo ultimoPunto promedioVariciones ultimaCotizacion = do
+  let punto = (fromIntegral ultimoPunto) + (12 * añoFuturo)
+  let res = ((12 * añoFuturo)* promedioVariciones) + ultimaCotizacion
+  if (res :: Double) > 0
+    then ( punto, res )
+    else ( punto, abs ( ultimaCotizacion / ((12 * añoFuturo) * promedioVariciones) ) )
+
+------------------------------------------------------------------------------
+
+-- dado un array de puntos, devuelve un string que representa el polinomio interpolante para los puntos proporcionados
+generarPolinomioInterpolante :: Interpolador.Interpolar.PuntosDeInterpolacion Double -> String
+generarPolinomioInterpolante puntos = calcularPolinomio puntos
+
+------------------------------------------------------------------------------
+
+-- dado un mes, un año y el año inicial del cual se tienen registros
+-- devuelve el numero de mes correspondiente (necesario para interpolar)
+-- numeroFecha = (12 * cantidadDeAños) + numeroMes
+-- cantidadDeAños = añoIngresado - añoInicial
+obtenerNumeroMesAEstimar :: Num p => Maybe p -> p -> p -> p
+obtenerNumeroMesAEstimar mes año añoDeInicio =
+  case mes of
+  Nothing   -> 0
+  Just numMes  -> (12 * (año - añoDeInicio)) + numMes
+
+-- dada una cotizacion futura y una cotizacion actual, devuelve su diferencia
+obtenerVariacionCotizacion :: Double -> Double -> Double
+obtenerVariacionCotizacion cotizacionFutura cotizacionActual = cotizacionFutura - cotizacionActual
+
+-- dada un cambio de cotizacion y la cotizacion actual, devuelve el porcentaje de cambio
+porcentajeVariacion :: Fractional a => a -> a -> a
+porcentajeVariacion variacion cotizacionActual = (variacion * 100) / cotizacionActual
+
+-- dado un array de puntos, devuelve un array de puntos (x,y) cambiando la primer componente de cada uno
+-- x = representa un mes
+-- y = representa una cotizacion para ese mes
+convertirPuntosRegistrosEnAños :: Fractional a => [(a, b)] -> [(a, b)]
+convertirPuntosRegistrosEnAños puntos = map (\ (x,y) -> ( (x / 12 ) + 2003, y ) ) puntos
+
+------------------------------------------------------------------------------
+-- AUXILIARES
+
+mostrarPolinomio :: Show a => a -> IO ()
+mostrarPolinomio polinomio = print polinomio
+
+verPolinomio :: IO ()
+verPolinomio = calcularPolinomio2
+
+-- dado un string, devuelve un entero
+toInt :: Read a => String -> a
+toInt string = read string
+
+calcularCotizacion :: [Record] -> Double -> Double    
+calcularCotizacion csv numMes = obtenerResultado (crearPuntos csv) numMes
