@@ -1,7 +1,4 @@
-á é í ó ú ñ
-
 # En Busca de la Haskellicidad
-
 _Estimador y comparador de diferentes tipos de cambio, que toma como base de referencia al peso argentino._
 
 ## Motivación 
@@ -13,12 +10,12 @@ Este proyecto propone una solución en respuesta a lo planteado, desarrollándos
 Con estos datos obtenidos, podremos analizar la evolución monetaria en el transcurso del tiempo, y también las variaciones frente a otros tipos de cambio._
 
 ## Solución
-_La aplicación se vale de dos tipos de entradas para dar inicio al procesamiento, por un lado los datos temporales (mes y año) y por otro los datos históricos de cotizaciones (CSV)._
-_Los datos temporales, son ingresados manualmente, al inicio de la ejecución del programa._
-_Las monedas que fueron tenidas en cuenta fueron el Dolar Estadounidense, el Real, el Euro, el Bolivar venezolano y el Bitcoin._
-_Las fechas a partir de las cuales se llevan registros inician en 2003. Los últimos registros de cotizaciones corresponden al 2019._
-_Mediante una combinacion de datos históricos y datos futuros calculados a partir de estos, se realiza una estimacion utilizando interpolacion._
-_Procesadas todas las monedas, se ordenan según el criterio de máxima variación y se muestran gráficos comparativos, donde se detalla la última cotización registrada, la cotización futura, y también la variación monetaria y porcentual.
+_La aplicación se vale de dos tipos de entradas para dar inicio al procesamiento, por un lado los datos temporales (mes y año) y por otro los datos históricos de cotizaciones (CSV).
+Los datos temporales, son ingresados manualmente, al inicio de la ejecución del programa.
+Las monedas que fueron tenidas en cuenta fueron el Dolar Estadounidense, el Real, el Euro, el Bolivar venezolano y el Bitcoin.
+Las fechas a partir de las cuales se llevan registros inician en 2003. Los últimos registros de cotizaciones corresponden al 2019.
+Mediante una combinacion de datos históricos y datos futuros calculados a partir de estos, se realiza una estimacion utilizando interpolacion.
+Procesadas todas las monedas, se ordenan según el criterio de máxima variación y se muestran gráficos comparativos, donde se detalla la última cotización registrada, la cotización futura, y también la variación monetaria y porcentual.
 Por otra parte, se muestran gráficos que representan la evolución de cada moneda a largo del tiempo._
 **A partir de estos gráficos estimativos, se podrá tomar la decisión sobre en qué moneda es más conveniente invertir.**
 
@@ -34,7 +31,7 @@ Si deseamos obtener una estimación para octubre, corresponde ingresar 'OCT'.
 ```
 _También solicitará ingresar un año, en el formato AA._ 
 ```
-Por ejemplo, si deseamos una estimación para 2020, corresponde ingresar '20'.
+Si deseamos una estimación para 2020, corresponde ingresar '20'.
 ```
 _Luego de ingresar estos datos, visualizaremos una tabla informativa, acerca de los puntos más importantes para cada cotización_
 _Se podrá observar, para cada moneda, un gráfico que muestra la evolución de cada moneda en el tiempo, y la cotización futura correspondiente._
@@ -63,4 +60,4 @@ Deberá ingresarse el comando 'q' o 'quit', para cerrar la ventana emergente del
 ### Autoría
 * [Haskell Data Analysis Cookbook](https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781783286331/1/ch01lvl1sec12/keeping-and-representing-data-from-a-csv-file) - Parser CSV
 * [BCRA](https://www.bcra.gob.ar/PublicacionesEstadisticas/Evolucion_moneda.asp)  - Cotizaciones
-* [Interpolation-Methods-Haskell](https://github.com/jatempa/Interpolation-Methods-Haskell) - Interpolacion
+* [Interpolation-Methods-Haskell](https://github.com/jatempa/Interpolation-Methods-Haskell) - Interpolación
