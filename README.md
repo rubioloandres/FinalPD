@@ -1,34 +1,66 @@
-En Busca de la Haskellicidad
+á é í ó ú ñ
 
-Motivaci�n: 
-Vivimos en una sociedad marcada por el impacto de la inestabilidad econ�mica que se da en el pa�s y la regi�n, por lo que es necesario mantenernos informados, y a partir de esto anticiparnos a ciertos problemas, o bien para tomar decisiones acertadas en el caso de inversiones.
+# En Busca de la Haskellicidad
 
-Objetivo:
-Bas�ndonos en datos hist�ricos de las cotizaciones de diferentes tipos de cambio, se propone realizar una aplicaci�n que sea capaz de realizar estimaciones de cotizaciones, para una fecha determinada.
-Este proyecto propone una soluci�n en respuesta a lo planteado, desarroll�ndose un estimador que es capaz de procesar datos hist�ricos, realizar c�lculos, y retornar cotizaciones futuras.
-Con estos datos obtenidos, podremos analizar la evoluci�n monetaria en el transcurso del tiempo, y tambi�n las variaciones frente a otros tipos de cambio.
+_Estimador y comparador de diferentes tipos de cambio, que toma como base de referencia al peso argentino._
 
-Soluci�n:
-La aplicaci�n se vale de dos tipos de entradas para dar inicio al procesamiento, por un lado los datos temporales (mes y a�o) y por otro los datos hist�ricos de cotizaciones (CSV).
-Los datos temporales, son ingresados manualmente, al inicio de la ejecuci�n del programa.
-Las monedas que fueron tenidas en cuenta fueron el D�lar Estadounidense, el Real, el Euro, el Bol�var venezolano y el Bitcoin.
-Las fechas a partir de las cuales se llevan registros inician en 2003. Los �ltimos registros de cotizaciones corresponden al 2019.
-Mediante una combinacion de datos hist�ricos y datos futuros calculados a partir de estos, se realiza una estimacion utilizando interpolacion.
-Procesadas todas las monedas, se ordenan seg�n el criterio de m�xima variaci�n y se muestran gr�ficos comparativos, donde se detalla la �ltima cotizaci�n registrada, la cotizaci�n futura, y tambi�n la variaci�n monetaria y porcentual.
-Por otra parte, se muestran gr�ficos que representan la evoluci�n de cada moneda a largo del tiempo.
-A partir de estos gr�ficos estimativos, se podr� tomar la decisi�n sobre en qu� moneda es m�s conveniente invertir.
+## Motivación 
+_Vivimos en una sociedad marcada por el impacto de la inestabilidad económica que se da en el país y la región, por lo que es necesario mantenernos informados, y a partir de esto anticiparnos a ciertos problemas, o bien para tomar decisiones acertadas en el caso de inversiones._
 
-Ejecuci�n: 
-El proyecto cuenta con un archivo ejecutable, alojado en la carpeta dist/build/FinalPD.
-Este archivo puede ser iniciado desde una consola. 
-Inicialmente nos solicitara un mes, que deber� ser ingresado en el formato MMM. Por ejemplo, si deseamos obtener una estimacion para octubre, corresponde OCT.
-Tambi�n solicitar� ingresar un a�o, en el formato AA. Por ejemplo, si deseamos una estimaci�n para 2020, corresponde 20.
-Luego de ingresar estos datos, visualizaremos una tabla informativa, acerca de los puntos m�s importantes para cada cotizaci�n
-Tambi�n se podr� observar, para cada moneda, un gr�fico que muestra la evoluci�n de cada moneda en el tiempo, y la cotizaci�n futura correspondiente.
-Deber� ingresarse el comando �q� o �quit�, para cerrar la ventana emergente del graficador, y as� continuar.
-Finalmente, se muestra una tabla comparativa, donde aparecer� de forma ordenada, las diferentes alternativas, siendo la primera, la mejor opci�n para invertir. 
+## Objetivo
+_Basándonos en datos históricos de las cotizaciones de diferentes tipos de cambio, se propone realizar una aplicación que sea capaz de realizar estimaciones de cotizaciones, para una fecha determinada.
+Este proyecto propone una solución en respuesta a lo planteado, desarrollándose un estimador que es capaz de procesar datos históricos, realizar cálculos, y retornar cotizaciones futuras.
+Con estos datos obtenidos, podremos analizar la evolución monetaria en el transcurso del tiempo, y también las variaciones frente a otros tipos de cambio._
 
-Autor�a:
-_ Haskell Data Analysis Cookbook (Parser CSV)
-_ BCRA (Cotizaciones)
-_ Interpolation-Methods-Haskell Jorge Atempa (Interpolacion)
+## Solución
+_La aplicación se vale de dos tipos de entradas para dar inicio al procesamiento, por un lado los datos temporales (mes y año) y por otro los datos históricos de cotizaciones (CSV)._
+_Los datos temporales, son ingresados manualmente, al inicio de la ejecución del programa._
+_Las monedas que fueron tenidas en cuenta fueron el Dolar Estadounidense, el Real, el Euro, el Bolivar venezolano y el Bitcoin._
+_Las fechas a partir de las cuales se llevan registros inician en 2003. Los últimos registros de cotizaciones corresponden al 2019._
+_Mediante una combinacion de datos históricos y datos futuros calculados a partir de estos, se realiza una estimacion utilizando interpolacion._
+_Procesadas todas las monedas, se ordenan según el criterio de máxima variación y se muestran gráficos comparativos, donde se detalla la última cotización registrada, la cotización futura, y también la variación monetaria y porcentual.
+Por otra parte, se muestran gráficos que representan la evolución de cada moneda a largo del tiempo._
+**A partir de estos gráficos estimativos, se podrá tomar la decisión sobre en qué moneda es más conveniente invertir.**
+
+## Ejecución
+_El proyecto cuenta con un archivo ejecutable, alojado en la carpeta_ 
+```
+dist/build/FinalPD
+```
+_Este archivo puede ser iniciado desde una consola._ 
+_Inicialmente nos solicitara un mes, que deberá ser ingresado en el formato MMM._ 
+```
+Si deseamos obtener una estimación para octubre, corresponde ingresar 'OCT'.
+```
+_También solicitará ingresar un año, en el formato AA._ 
+```
+Por ejemplo, si deseamos una estimación para 2020, corresponde ingresar '20'.
+```
+_Luego de ingresar estos datos, visualizaremos una tabla informativa, acerca de los puntos más importantes para cada cotización_
+_Se podrá observar, para cada moneda, un gráfico que muestra la evolución de cada moneda en el tiempo, y la cotización futura correspondiente._
+```
+Deberá ingresarse el comando 'q' o 'quit', para cerrar la ventana emergente del graficador, y así continuar.
+```
+**Finalmente, se muestra una tabla comparativa, donde aparecerá de forma ordenada, las diferentes alternativas, siendo la primera, la mejor opción para invertir.** 
+
+## Construcción
+### Herramientas
+* [Visual Studio Code](https://code.visualstudio.com/) - Editor - Version 1.38.1
+* [GHC](https://www.haskell.org/ghc/)  - Compilador - Version 8.6.5
+* [Cabal](https://www.haskell.org/cabal/) - Arquitectura - Version 2.4.1.0
+* [GitKraken](https://www.gitkraken.com/) - Interfaz gráfica para git
+* [GNUPlot](http://www.gnuplot.info/) - Utilidad de gráficos - Version 5.2
+* [Wolfram](https://www.wolframalpha.com/) - Análisis y Cálculos 
+
+### Librerías
+* [Base](http://hackage.haskell.org/package/base) - Libreria Base
+* [Text.CSV](http://hackage.haskell.org/package/csv-0.1.2/docs/Text-CSV.html) - Parseo de datos CSV
+* [Easyplot](http://hackage.haskell.org/package/easyplot) - Graficador de evolución de cotizaciones
+* [Tabular](http://hackage.haskell.org/package/tabular) - Tablas de datos bidimensionales
+* [Parsec](http://hackage.haskell.org/package/parsec) - Combinadores de analizador monádico
+* [Process](http://hackage.haskell.org/package/process) - Bibliotecas de procesos
+
+### Autoría
+* [Haskell Data Analysis Cookbook](https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781783286331/1/ch01lvl1sec12/keeping-and-representing-data-from-a-csv-file) - Parser CSV
+* [BCRA](https://www.bcra.gob.ar/PublicacionesEstadisticas/Evolucion_moneda.asp)  - Cotizaciones
+* [Interpolation-Methods-Haskell](https://github.com/jatempa/Interpolation-Methods-Haskell) - Interpolacion
