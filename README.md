@@ -12,7 +12,7 @@ Con estos datos obtenidos, podremos analizar la evolución monetaria en el trans
 ## Solución
 _La aplicación se vale de dos tipos de entradas para dar inicio al procesamiento, por un lado los datos temporales (mes y año) y por otro los datos históricos de cotizaciones (CSV).
 Los datos temporales, son ingresados manualmente, al inicio de la ejecución del programa.
-Las monedas que fueron tenidas en cuenta fueron el Dolar Estadounidense, el Real, el Euro, el Bolivar venezolano y el Bitcoin.
+Las monedas que fueron tenidas en cuenta son el Dolar Estadounidense, el Real, el Euro, el Bolivar venezolano y el Bitcoin.
 Las fechas a partir de las cuales se llevan registros inician en 2003. Los últimos registros de cotizaciones corresponden al 2019.
 Mediante una combinacion de datos históricos y datos futuros calculados a partir de estos, se realiza una estimacion utilizando interpolacion.
 Procesadas todas las monedas, se ordenan según el criterio de máxima variación y se muestran gráficos comparativos, donde se detalla la última cotización registrada, la cotización futura, y también la variación monetaria y porcentual.
@@ -61,3 +61,6 @@ Deberá ingresarse el comando 'q' o 'quit', para cerrar la ventana emergente del
 * [Haskell Data Analysis Cookbook](https://subscription.packtpub.com/book/big_data_and_business_intelligence/9781783286331/1/ch01lvl1sec12/keeping-and-representing-data-from-a-csv-file) - Parser CSV
 * [BCRA](https://www.bcra.gob.ar/PublicacionesEstadisticas/Evolucion_moneda.asp)  - Cotizaciones
 * [Interpolation-Methods-Haskell](https://github.com/jatempa/Interpolation-Methods-Haskell) - Interpolación
+
+---
+Desarrollado por [Andres Rubiolo](https://github.com/rubioloandres)
