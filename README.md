@@ -1,5 +1,5 @@
 # En Busca de la Haskellicidad
-_Estimador y comparador de diferentes tipos de cambio, que toma como base de referencia al peso argentino._
+_Estimador y comparador de diferentes tipos de cambio, que toma como base de referencia al valor de compra con pesos argentinos._
 
 ## Motivación 
 _Vivimos en una sociedad marcada por el impacto de la inestabilidad económica que se da en el país y la región, por lo que es necesario mantenernos informados, y a partir de esto anticiparnos a ciertos problemas, o bien para tomar decisiones acertadas en el caso de inversiones._
@@ -25,7 +25,7 @@ _El proyecto cuenta con un archivo ejecutable, alojado en la carpeta_
 dist/build/FinalPD
 ```
 _Este archivo puede ser iniciado desde una consola._ 
-_Inicialmente nos solicitara un mes, que deberá ser ingresado en el formato MMM._ 
+_Inicialmente nos solicitará un mes, que deberá ser ingresado en el formato MMM._ 
 ```
 Si deseamos obtener una estimación para octubre, corresponde ingresar 'OCT'.
 ```
