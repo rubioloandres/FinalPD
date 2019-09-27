@@ -20,6 +20,7 @@ Por otra parte, se muestran gráficos que representan la evolución de cada mone
 **A partir de estos gráficos estimativos, se podrá tomar la decisión sobre en qué moneda es más conveniente invertir.**
 
 ## Ejecución
+_Se requiere una instalacion previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md)_
 _El proyecto cuenta con un archivo ejecutable, alojado en la carpeta_ 
 ```
 dist/build/FinalPD
