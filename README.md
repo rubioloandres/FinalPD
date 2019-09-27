@@ -22,7 +22,7 @@ Por otra parte, se muestran gráficos que representan la evolución de cada mone
 ## Ejecución
 
 ### Requerimientos 
-_Se requiere una instalacion previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md)_
+_Se requiere una instalación previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md)_
 
 ### Ubicación
 _El proyecto cuenta con un archivo ejecutable, para el caso de Windows, está alojado en la carpeta_ 
@@ -33,6 +33,7 @@ _Para el caso de en Linux, se encuentra en_
 ```
 dist/build/FinalPD-Linux
 ```
+
 ### Uso
 _El archivo ejecutable puede ser iniciado desde una consola._ 
 _Inicialmente nos solicitará un mes, que deberá ser ingresado en el formato MMM._ 
@@ -49,6 +50,13 @@ _Se podrá observar, para cada moneda, un gráfico que muestra la evolución de 
 Deberá ingresarse el comando 'q' o 'quit', para cerrar la ventana emergente del graficador, y así continuar.
 ```
 **Finalmente, se muestra una tabla comparativa, donde aparecerá de forma ordenada, las diferentes alternativas, siendo la primera, la mejor opción para invertir.** 
+
+### Aclaraciones
+_Si cuando se intenta ejecutar en Linux, se arroja un error 'Permission denied', debemos ejecutar el comando_
+```
+chmod u+x FinalPD
+```
+_Luego de ejecutar este comando, ya podremos iniciar la aplicación._
 
 ## Construcción
 ### Herramientas
