@@ -96,7 +96,8 @@ mostrarGraficoMonedas (x:xs) = do
             plotearCotizaciones ( x ) 
             mostrarGraficoMonedas xs
 
--- dada una moneda procesada, devuelve un grafico a traves de gnuplot
+-- dada una moneda procesada, devuelve un grafico a traves de gnuplot 
+-- la funcion plot' recibe como parametro 'Windows' para terminales Windows, y 'X11' para Linux
 plotearCotizaciones :: MonedaProcesada -> IO ()
 plotearCotizaciones datosMoneda = do
   putStrLn ("--- Evolucion del " ++ (nombre datosMoneda) ++ ". Escriba el comando 'q' para cerrar el plot y continuar ---")

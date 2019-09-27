@@ -4,9 +4,8 @@
 
 ### Descarga
 _Acceder al siguiente link y descargar_
-```
-[GNUPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/) - Link de descarga
-```
+* [GNUPlot](https://sourceforge.net/projects/gnuplot/files/gnuplot/) - Link de descarga
+
 
 ### Instalación
 _Abrir el instalador_
@@ -21,5 +20,10 @@ _Abrir el instalador_
 _Si luego de instalar GNUPlot, se ejecuta la aplicación, y esta arroja una excepción gnuplot RawSystem, mover la carpeta del programa a un directorio diferente a la partición del sistema._
 
 ## Linux
+
+### Instalación
+_Abrir la consola_
+* sudo apt-get update
+* sudo apt-get install gnuplot
 
 ---

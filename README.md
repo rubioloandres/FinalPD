@@ -20,12 +20,21 @@ Por otra parte, se muestran gráficos que representan la evolución de cada mone
 **A partir de estos gráficos estimativos, se podrá tomar la decisión sobre en qué moneda es más conveniente invertir.**
 
 ## Ejecución
+
+### Requerimientos 
 _Se requiere una instalacion previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md)_
-_El proyecto cuenta con un archivo ejecutable, alojado en la carpeta_ 
+
+### Ubicación
+_El proyecto cuenta con un archivo ejecutable, para el caso de Windows, está alojado en la carpeta_ 
 ```
-dist/build/FinalPD
+dist/build/FinalPD 
 ```
-_Este archivo puede ser iniciado desde una consola._ 
+_Para el caso de en Linux, se encuentra en_
+```
+dist/build/FinalPD-Linux
+```
+### Uso
+_El archivo ejecutable puede ser iniciado desde una consola._ 
 _Inicialmente nos solicitará un mes, que deberá ser ingresado en el formato MMM._ 
 ```
 Si deseamos obtener una estimación para octubre, corresponde ingresar 'OCT'.
