@@ -7,7 +7,8 @@ import Procesador.Graficar
 
 main :: IO ()
 main = do
-  system "cls"
+  system "cls" -- Windows
+  -- system "clear"  -- Linux
   putStrLn "-------------------------------------------------------------------------"
   putStrLn "Ingrese un mes en formato MMM: "
   nombreMes <- getLine
