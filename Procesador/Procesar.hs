@@ -40,11 +40,11 @@ mesesDeAño =
 ------------------------------------------------------------------------------
 
 -- dado un mes y año, y una lista de datos de cotizaciones, devuelve un array de monedas procesadas
-procesarMonedas :: [Char] -> [Char] -> [([Char], Either a [[[Char]]])] -> [MonedaProcesada]
+procesarMonedas :: String -> String -> [(String, Either a [[String]])] -> [MonedaProcesada]
 procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaDatos
 
 -- dado un mes y año, y un dato de cotizacion, devuelve una moneda procesada
-procesarMoneda :: [Char] -> [Char] -> ([Char], Either a [[[Char]]]) -> MonedaProcesada
+procesarMoneda :: String -> String -> (String, Either a [[String]]) -> MonedaProcesada
 procesarMoneda nomMes año dato = case (snd dato) of
   Left  perr -> do
     let monedaNoProcesada = MonedaProcesada { nombre = "error"
@@ -60,7 +60,7 @@ procesarMoneda nomMes año dato = case (snd dato) of
     monedaNoProcesada   
   Right csv ->  do
     let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
-    (datosMoneda !! 0)
+    datosMoneda
  
 -- dado un array de monedas procesadas, ordena el array en base al cambio de cotizaciones
 -- siendo la primera la de mayor variacion positiva (mejor inversion)    
@@ -69,8 +69,8 @@ ordenarVariacionesDeCotizaciones monedas = reverse (sortBy (comparing porcentaje
 ------------------------------------------------------------------------------
 
 -- dado el nombre de una moneda, un csv, un mes y un año
--- devuelve una MonedaProcesada, con los datos necesarios para su analisis y comparacion     
-procesarDatos :: Monad m => [Char] -> [[[Char]]] -> [Char] -> [Char] -> m MonedaProcesada
+-- devuelve una MonedaProcesada, con los datos necesarios para su analisis y comparacion  
+procesarDatos :: [Char] -> [[String]] -> [Char] -> [Char] -> MonedaProcesada
 procesarDatos moneda csv nomMes año = do
     let numeroMes = buscarNumeroMes nomMes
     let añoDeInicio = obtenerAñoDeInicio csv
@@ -100,21 +100,21 @@ procesarDatos moneda csv nomMes año = do
                                           , polinomio = polinomio
                                           , cotizaciones = listaCotizacionesPorAño
                                           , cotizacionesFuturas = listaCotizacionesFuturas
-                                          }                          
-    return monedaProcesada                         
+                                          }  
+    monedaProcesada                                                                                         
 
 ------------------------------------------------------------------------------    
 
 -- dado un mes 'MMM' nos devuelve un numero de mes
-buscarNumeroMes :: [Char] -> Maybe Double
+buscarNumeroMes :: String -> Maybe Double
 buscarNumeroMes nombreMes = encontrarMes nombreMes mesesDeAño
 
 -- dado un mes y una lista de meses, devuelve el numero de mes correspondiente
-encontrarMes :: Foldable t => [Char] -> t ([Char], a) -> Maybe a
+encontrarMes :: String -> [ (String, Double) ] -> Maybe Double
 encontrarMes nombreMes = foldr (\(nomMes,numMes) acc -> if  (lowerString nombreMes) == nomMes  then Just numMes else acc) Nothing
 
 -- convierte a minuscula un string
-lowerString :: [Char] -> [Char]
+lowerString :: String -> String
 lowerString = map toLower
 
 ------------------------------------------------------------------------------

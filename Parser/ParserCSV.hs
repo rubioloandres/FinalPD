@@ -42,12 +42,12 @@ extraerColumnaComoRead csv numeroDeColumna =
   [ read (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ] 
 
 -- dado un csv y un numero de columna, devuelve un array (de strings) con los datos de la columna indicada
-extraerColumnaComoString :: [[[Char]]] -> Int -> [[Char]]   
+extraerColumnaComoString :: [[String]] -> Int -> [String]   
 extraerColumnaComoString csv numeroDeColumna =
   [ (columna !! numeroDeColumna) | columna <- csv , length columna > numeroDeColumna , columna /= [""] ]
 
 -- dado un csv, devuelve el año del primer registro de cotizacion
-obtenerAñoDeInicio :: [[[Char]]] -> Double
+obtenerAñoDeInicio :: [[String]] -> Double
 obtenerAñoDeInicio csv =  read ( drop 4 (head ( extraerColumnaComoString (obtenerDatos csv) 0 )) ) :: Double
 
 -- dado un csv, devuelve la ultima cotizacion registrada

@@ -15,11 +15,11 @@ main = do
   putStrLn "Ingrese un año en formato AA: "
   año <- getLine
 
-  let nombreDeArchivo1 = "cotizacionesDolar.csv"
-  let nombreDeArchivo2 = "cotizacionesReal.csv"
-  let nombreDeArchivo3 = "cotizacionesEuro.csv"
-  let nombreDeArchivo4 = "cotizacionesBolivar.csv" 
-  let nombreDeArchivo5 = "cotizacionesBitcoin.csv"
+  let nombreDeArchivo1 = "../../../Cotizaciones/cotizacionesDolar.csv"
+  let nombreDeArchivo2 = "../../../Cotizaciones/cotizacionesReal.csv"
+  let nombreDeArchivo3 = "../../../Cotizaciones/cotizacionesEuro.csv"
+  let nombreDeArchivo4 = "../../../Cotizaciones/cotizacionesBolivar.csv" 
+  let nombreDeArchivo5 = "../../../Cotizaciones/cotizacionesBitcoin.csv"
   entrada  <- readFile nombreDeArchivo1
   entrada2 <- readFile nombreDeArchivo2
   entrada3 <- readFile nombreDeArchivo3

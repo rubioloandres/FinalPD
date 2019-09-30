@@ -16,7 +16,7 @@ calcularPolinomio2 :: IO ()
 calcularPolinomio2 = putStrLn.mostrarPolinomio $ polinomioPara arregloDePuntos
 
 obtenerResultado :: PuntosDeInterpolacion Double -> Double -> Double
-obtenerResultado arregloDePuntos x = calcular ( polinomioPara arregloDePuntos ) x
+obtenerResultado arregloDePuntos x = evaluar ( polinomioPara arregloDePuntos ) x
 
 polinomioPara :: PuntosDeInterpolacion Double -> Polinomio Double
 polinomioPara [] = []
@@ -43,10 +43,10 @@ mostrarPolinomio (x:xs) = s (length xs) ++ " + "++ mostrarPolinomio xs where
  s 1 = show x ++ "x"
  s n = show x ++ "x^" ++ show n
 
-calcular :: (Eq a , Num a) => Polinomio a -> a -> a 
-calcular [] num = 0
-calcular (0:xs) num = calcular xs num
-calcular (x:xs) num = (s (length xs) ) + (calcular xs num) where
+evaluar :: (Eq a , Num a) => Polinomio a -> a -> a 
+evaluar [] num = 0
+evaluar (0:xs) num = evaluar xs num
+evaluar (x:xs) num = (s (length xs) ) + (evaluar xs num) where
  s 0 = x
  s 1 = ( x * num )
  s n = ( ( num ^ n ) * x )

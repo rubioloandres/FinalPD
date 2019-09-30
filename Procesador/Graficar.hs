@@ -8,7 +8,7 @@ import Text.Tabular as TT
 -- Armado de tablas
 
 -- dado un array de monedas procesadas, devuelve una tabla informativa
-datosTablaCotizaciones :: [MonedaProcesada] -> TT.Table String [Char] [Char]
+datosTablaCotizaciones :: [MonedaProcesada] -> TT.Table String String String
 datosTablaCotizaciones monedas = Table
   (Group SingleLine
      [ Group NoLine [TT.Header (nombre (monedas !! 0))]
@@ -53,7 +53,7 @@ datosTablaCotizaciones monedas = Table
 ------------------------------------------------------------------------------
 
 -- dado un array de monedas procesadas, devuelve una tabla comparativa de variaciones de sus cotizaciones
-datosTablaVariacionCotizaciones :: [MonedaProcesada] -> TT.Table [Char] [Char] String
+datosTablaVariacionCotizaciones :: [MonedaProcesada] -> TT.Table String String String
 datosTablaVariacionCotizaciones monedas = Table
   (Group SingleLine
       [ Group NoLine [TT.Header "1°"]
