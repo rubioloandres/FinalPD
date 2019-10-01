@@ -1,14 +1,11 @@
 import Text.CSV
-import Text.Parsec.Error
-import Text.Tabular.AsciiArt
 import System.Process
 import Procesador.Procesar
 import Procesador.Graficar
 
 main :: IO ()
 main = do
-  system "cls" -- Windows
-  -- system "clear"  -- Linux
+  _ <- system "cls" -- Windows //  -- system "clear"  -- Linux
   putStrLn "-------------------------------------------------------------------------"
   putStrLn "Ingrese un mes en formato MMM: "
   nombreMes <- getLine

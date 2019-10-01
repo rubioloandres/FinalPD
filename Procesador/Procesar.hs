@@ -3,12 +3,10 @@ module Procesador.Procesar where
 import Text.CSV
 import Parser.ParserCSV
 import Interpolador.Interpolar    
-import System.Process
 import Data.Char
 import Data.List
 import Data.List (sortBy)
 import Data.Ord (comparing)
-
 
 data MonedaProcesada = MonedaProcesada 
                         { nombre :: String
@@ -22,6 +20,7 @@ data MonedaProcesada = MonedaProcesada
                         , cotizacionesFuturas :: [(Double,Double)]
                         } deriving (Eq, Show, Read, Ord)
 
+mesesDeAño :: [([Char], Double)]
 mesesDeAño =
             [("ene",0)
             ,("feb",1)
@@ -46,7 +45,7 @@ procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaD
 -- dado un mes y año, y un dato de cotizacion, devuelve una moneda procesada
 procesarMoneda :: String -> String -> (String, Either a [[String]]) -> MonedaProcesada
 procesarMoneda nomMes año dato = case (snd dato) of
-  Left  perr -> do
+  Left _ -> do
     let monedaNoProcesada = MonedaProcesada { nombre = "error"
                                             , ultimaCotizacion = 0.0
                                             , fechaCotizacionFutura = 0.0
