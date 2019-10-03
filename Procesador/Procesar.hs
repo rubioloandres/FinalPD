@@ -7,6 +7,8 @@ import Data.Char
 import Data.List
 import Data.List (sortBy)
 import Data.Ord (comparing)
+import Data.Maybe
+import Text.Parsec.Error
 
 data MonedaProcesada = MonedaProcesada 
                         { nombre :: String
@@ -20,7 +22,7 @@ data MonedaProcesada = MonedaProcesada
                         , cotizacionesFuturas :: [(Double,Double)]
                         } deriving (Eq, Show, Read, Ord)
 
-mesesDeAño :: [([Char], Double)]
+mesesDeAño :: [(String, Double)]
 mesesDeAño =
             [("ene",0)
             ,("feb",1)
@@ -37,29 +39,20 @@ mesesDeAño =
             ]    
 
 ------------------------------------------------------------------------------
+procesarEntradas :: [(FilePath, String)] -> [Either Text.Parsec.Error.ParseError CSV]
+procesarEntradas pathsEntradas = map (\ pathEntrada -> ( parseCSV (fst pathEntrada) (snd pathEntrada) ) ) pathsEntradas
 
 -- dado un mes y año, y una lista de datos de cotizaciones, devuelve un array de monedas procesadas
 procesarMonedas :: String -> String -> [(String, Either a [[String]])] -> [MonedaProcesada]
-procesarMonedas nomMes año listaDatos = map (procesarMoneda nomMes año) listaDatos
+procesarMonedas nomMes año listaDatos = catMaybes (map (\dato -> procesarMoneda nomMes año dato ) listaDatos)
 
 -- dado un mes y año, y un dato de cotizacion, devuelve una moneda procesada
-procesarMoneda :: String -> String -> (String, Either a [[String]]) -> MonedaProcesada
+procesarMoneda :: String -> String -> (String, Either a [[String]]) -> Maybe MonedaProcesada
 procesarMoneda nomMes año dato = case (snd dato) of
-  Left _ -> do
-    let monedaNoProcesada = MonedaProcesada { nombre = "error"
-                                            , ultimaCotizacion = 0.0
-                                            , fechaCotizacionFutura = 0.0
-                                            , cotizacionFutura = 0.0
-                                            , variacionCotizacion = 0
-                                            , porcentajeVariacionCotizacion = 0
-                                            , polinomio = "error"
-                                            , cotizaciones = []
-                                            , cotizacionesFuturas = []
-                                            }  
-    monedaNoProcesada   
+  Left _ -> Nothing
   Right csv ->  do
     let datosMoneda = (procesarDatos (fst dato) csv nomMes año)
-    datosMoneda
+    Just datosMoneda
  
 -- dado un array de monedas procesadas, ordena el array en base al cambio de cotizaciones
 -- siendo la primera la de mayor variacion positiva (mejor inversion)    
@@ -69,38 +62,37 @@ ordenarVariacionesDeCotizaciones monedas = reverse (sortBy (comparing porcentaje
 
 -- dado el nombre de una moneda, un csv, un mes y un año
 -- devuelve una MonedaProcesada, con los datos necesarios para su analisis y comparacion  
-procesarDatos :: [Char] -> [[String]] -> [Char] -> [Char] -> MonedaProcesada
-procesarDatos moneda csv nomMes año = do
+procesarDatos :: String -> [[String]] -> String -> String -> MonedaProcesada
+procesarDatos moneda csv nomMes año =
     let numeroMes = buscarNumeroMes nomMes
-    let añoDeInicio = obtenerAñoDeInicio csv
-    let listaPuntos = crearPuntos csv
-    let ultimoPunto = obtenerUltimoPunto listaPuntos
-    let listaVariaciones = obtenerVariaciones listaPuntos
-    let promedioDeVariaciones = promedio listaVariaciones
-    let ultimaCotizacion = obtenerUltimaCotizacion csv
-    let añosFuturo = 8
-    let puntosFuturos = crearPuntosAñoFuturo añosFuturo ultimoPunto promedioDeVariaciones ultimaCotizacion
-    let puntosAInterpolar = (listaPuntos ++ puntosFuturos)
-    let polinomio = generarPolinomioInterpolante puntosAInterpolar
-    let numeroMesAEstimar = obtenerNumeroMesAEstimar numeroMes (toInt año) añoDeInicio 
-    let cotizacionFutura = redondear4Decimales (interpolarLagrange puntosAInterpolar numeroMesAEstimar)
-    let cotizacionActual = obtenerUltimaCotizacion csv
-    let cambioEnCotizacion = redondear4Decimales (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
-    let porcentajeCambioEnCotizacion = redondear2Decimales (porcentajeVariacion cambioEnCotizacion cotizacionActual)
-    let listaCotizacionesPorAño = convertirPuntosRegistrosEnAños listaPuntos
-    let listaCotizacionesFuturas = convertirPuntosRegistrosEnAños ([(last listaPuntos)] ++ (take 3 puntosFuturos)) 
+        añoDeInicio = obtenerAñoDeInicio csv
+        listaPuntos = crearPuntos csv
+        ultimoPunto = obtenerUltimoPunto listaPuntos
+        listaVariaciones = obtenerVariaciones listaPuntos
+        promedioDeVariaciones = promedio listaVariaciones
+        ultimaCotizacion = obtenerUltimaCotizacion csv
+        añosFuturo = 8
+        puntosFuturos = crearPuntosAñoFuturo añosFuturo ultimoPunto promedioDeVariaciones ultimaCotizacion
+        puntosAInterpolar = (listaPuntos ++ puntosFuturos)
+        polinomio = generarPolinomioInterpolante puntosAInterpolar
+        numeroMesAEstimar = obtenerNumeroMesAEstimar numeroMes (toInt año) añoDeInicio 
+        cotizacionFutura = redondear4Decimales (interpolarLagrange puntosAInterpolar numeroMesAEstimar)
+        cotizacionActual = obtenerUltimaCotizacion csv
+        cambioEnCotizacion = redondear4Decimales (obtenerVariacionCotizacion cotizacionFutura cotizacionActual)
+        porcentajeCambioEnCotizacion = redondear2Decimales (porcentajeVariacion cambioEnCotizacion cotizacionActual)
+        listaCotizacionesPorAño = convertirPuntosRegistrosEnAños listaPuntos
+        listaCotizacionesFuturas = convertirPuntosRegistrosEnAños ([(last listaPuntos)] ++ (take 3 puntosFuturos)) 
 
-    let monedaProcesada = MonedaProcesada { nombre = moneda
-                                          , ultimaCotizacion = cotizacionActual
-                                          , fechaCotizacionFutura = (numeroMesAEstimar / 12 ) + 2003
-                                          , cotizacionFutura = cotizacionFutura
-                                          , variacionCotizacion = cambioEnCotizacion
-                                          , porcentajeVariacionCotizacion = porcentajeCambioEnCotizacion
-                                          , polinomio = polinomio
-                                          , cotizaciones = listaCotizacionesPorAño
-                                          , cotizacionesFuturas = listaCotizacionesFuturas
-                                          }  
-    monedaProcesada                                                                                         
+    in MonedaProcesada { nombre = moneda
+                       , ultimaCotizacion = cotizacionActual
+                       , fechaCotizacionFutura = (numeroMesAEstimar / 12 ) + 2003
+                       , cotizacionFutura = cotizacionFutura
+                       , variacionCotizacion = cambioEnCotizacion
+                       , porcentajeVariacionCotizacion = porcentajeCambioEnCotizacion
+                       , polinomio = polinomio
+                       , cotizaciones = listaCotizacionesPorAño
+                       , cotizacionesFuturas = listaCotizacionesFuturas
+                       }                                                                                           
 
 ------------------------------------------------------------------------------    
 

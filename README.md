@@ -22,16 +22,16 @@ Por otra parte, se muestran gráficos que representan la evolución de cada mone
 ## Ejecución
 
 ### Requerimientos 
-_Se requiere una instalación previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md)_
+* Se requiere una instalación previa de [GNUPlot](https://github.com/rubioloandres/FinalPD/blob/master/INSTALLGNUPlot.md) 
 
 ### Ubicación
 _El proyecto cuenta con un archivo ejecutable, para el caso de Windows, está alojado en la carpeta_ 
 ```
-dist/build/FinalPD 
+Ejecutables/Windows
 ```
 _Para el caso de en Linux, se encuentra en_
 ```
-dist/build/FinalPD-Linux
+Ejecutables/Linux
 ```
 
 ### Uso
