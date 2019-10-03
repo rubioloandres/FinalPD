@@ -1,4 +1,3 @@
-import Text.CSV
 import System.Process
 import Procesador.Procesar
 import Procesador.Graficar
@@ -11,16 +10,11 @@ main = do
   nombreMes <- getLine
   putStrLn "Ingrese un año en formato AA: "
   año <- getLine
-
-  let pathsArchivos = [ "../../../Cotizaciones/cotizacionesDolar.csv"
-                      , "../../../Cotizaciones/cotizacionesReal.csv"
-                      , "../../../Cotizaciones/cotizacionesEuro.csv"
-                      , "../../../Cotizaciones/cotizacionesBolivar.csv"
-                      , "../../../Cotizaciones/cotizacionesBitcoin.csv"]
-
+  
+  let monedas = ["Dolar", "Real","Euro","Bolivar","Bitcoin"]
+  let pathsArchivos = map ( \m -> "../../../Cotizaciones/cotizaciones" ++ m ++ ".csv" ) monedas 
   entradas <- mapM readFile pathsArchivos
   let datosCSVs = procesarEntradas (zip pathsArchivos entradas)
-  let monedas = ["Dolar", "Real","Euro","Bolivar","Bitcoin"]
   let monedasDatos = zip monedas datosCSVs
   let monedasProcesadas = procesarMonedas nombreMes año monedasDatos
   let monedasOrdenadas = ordenarVariacionesDeCotizaciones monedasProcesadas
