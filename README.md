@@ -1,5 +1,5 @@
-# En Busca de la Haskellicidad
-_Estimador y comparador de diferentes tipos de cambio, que toma como base de referencia al valor de compra con pesos argentinos._
+# Estimador de cotizaciones de monedas - Futuros
+_Estimador y comparador de diferentes tipos de cambio, que toma como base de paridad al valor de compra de pesos argentinos._
 
 ## Motivación 
 _Vivimos en una sociedad marcada por el impacto de la inestabilidad económica que se da en el país y la región, por lo que es necesario mantenernos informados, y a partir de esto anticiparnos a ciertos problemas, o bien para tomar decisiones acertadas en el caso de inversiones._
